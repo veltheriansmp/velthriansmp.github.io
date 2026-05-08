@@ -15,92 +15,89 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Outfit', sans-serif; background-color: var(--bg); color: #fff; min-height: 100vh; overflow-x: hidden; }
 
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background-color: var(--bg); color: #fff; 
-            min-height: 100vh; display: flex; flex-direction: column; align-items: center;
-            overflow-x: hidden;
-        }
+        /* PAGE TRANSITION */
+        #page-transition { position: fixed; inset: 0; background: var(--bg); z-index: 9999; pointer-events: none; transition: 0.5s var(--m3-ease); }
+        body.loaded #page-transition { opacity: 0; transform: translateY(-30px); }
 
         /* NAVIGATION */
-        nav { 
-            width: 100%; max-width: 1200px; padding: 15px 25px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; background: rgba(10, 10, 12, 0.95);
-            backdrop-filter: blur(12px); z-index: 100;
-        }
-
-        .nav-logo img { height: 40px; width: 40px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(226, 183, 73, 0.3); }
+        nav { width: 100%; padding: 15px 25px; display: flex; justify-content: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(12px); z-index: 100; }
+        .nav-container { width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo img { height: 40px; width: 40px; border-radius: 8px; object-fit: cover; }
         .nav-links { display: flex; gap: 30px; }
         .nav-links a { color: #fff; text-decoration: none; opacity: 0.5; transition: 0.3s; font-size: 14px; font-weight: 500; }
-        .nav-links a:hover { opacity: 1; color: var(--gold); }
-        .nav-links a.active { opacity: 1; color: var(--gold); }
+        .nav-links a.active, .nav-links a:hover { opacity: 1; color: var(--gold); }
 
-        /* HERO SECTION */
-        .hero { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 20px; max-width: 900px; }
-        .hero-logo { width: 180px; height: 180px; margin-bottom: 40px; border-radius: 24px; object-fit: cover; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
-
+        /* HERO */
+        .hero { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 100px 20px; min-height: 80vh; }
+        .hero-logo { width: 180px; height: 180px; margin-bottom: 40px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         h1 { font-size: clamp(44px, 8vw, 80px); font-weight: 700; line-height: 0.9; margin-bottom: 25px; letter-spacing: -2px; }
         .hero p { font-size: 18px; opacity: 0.5; max-width: 500px; line-height: 1.6; margin-bottom: 45px; }
 
         /* BUTTONS */
-        .cta-group { display: flex; gap: 15px; }
-        .btn { padding: 18px 36px; border-radius: 14px; font-size: 15px; font-weight: 600; text-decoration: none; transition: 0.4s var(--m3-ease); cursor: pointer; border: none; font-family: 'Outfit'; }
+        .cta-group { display: flex; gap: 12px; }
+        .btn { padding: 16px 28px; border-radius: 12px; font-size: 15px; font-weight: 600; text-decoration: none; transition: 0.4s var(--m3-ease); cursor: pointer; border: none; font-family: 'Outfit'; display: inline-flex; align-items: center; justify-content: center; }
         .btn-primary { background: #fff; color: #000; }
         .btn-secondary { border: 1px solid var(--border); color: #fff; background: transparent; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
 
-        /* MORPH GHOST */
-        #morph-ghost { position: fixed; z-index: 1000; pointer-events: none; opacity: 0; background: #fff; border-radius: 14px; }
-
-        /* MODAL SYSTEM */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; place-items: center; z-index: 2000; padding: 20px; backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease; overflow-y: auto; }
+        /* MODAL */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; place-items: center; z-index: 2000; padding: 20px; backdrop-filter: blur(15px); opacity: 0; transition: 0.4s; overflow-y: auto; }
         .overlay.active { display: grid; opacity: 1; }
-
-        .modal { background: #0d0d11; width: 100%; max-width: 520px; border: 1px solid var(--border); border-radius: 32px; padding: 40px; transform: scale(0.9); transition: 0.5s var(--m3-ease); text-align: center; margin: auto; }
+        .modal { background: #0d0d11; width: 100%; max-width: 520px; border: 1px solid var(--border); border-radius: 32px; padding: 40px; position: relative; transform: scale(0.9); transition: 0.5s var(--m3-ease); margin: auto; }
         .overlay.active .modal { transform: scale(1); }
-
-        .app-step { display: none; opacity: 0; transform: translateY(10px); transition: 0.4s ease; }
-        .app-step.active { display: block; opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
-
+        
+        /* FORM COMPONENTS */
         .m-title h2 { font-size: 28px; margin-bottom: 8px; }
         .m-title p { color: var(--gold); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; font-weight: 700; }
-
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 8px; font-weight: 700; }
         .input-group input, .input-group textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: #fff; font-family: 'Outfit'; outline: none; transition: 0.3s; }
-        .input-group input:focus { border-color: var(--gold); background: rgba(255,255,255,0.08); }
-
-        /* TOGGLE STYLES */
+        .input-group input:focus { border-color: var(--gold); }
+        
         .toggle-container { display: flex; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--border); }
-        .toggle-btn { flex: 1; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.3s; opacity: 0.5; }
+        .toggle-btn { flex: 1; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.3s; opacity: 0.5; text-align: center; }
         .toggle-btn.active { background: #fff; color: #000; opacity: 1; }
 
-        /* DYNAMIC INPUTS */
         .social-entry { display: flex; gap: 8px; margin-bottom: 8px; }
-        .add-btn { background: var(--gold); color: #000; border: none; border-radius: 8px; width: 45px; cursor: pointer; font-weight: bold; font-size: 18px; }
-        .social-locked { opacity: 0.2; pointer-events: none; filter: grayscale(1); transition: 0.4s; }
+        .add-btn { background: var(--gold); color: #000; border: none; border-radius: 8px; width: 45px; cursor: pointer; font-weight: bold; }
 
-        .desc { opacity: 0.7; font-size: 15px; line-height: 1.6; margin-bottom: 30px; }
-        .loader { width: 16px; height: 16px; border: 2px solid #000; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; margin-right: 10px; }
+        .app-step { display: none; opacity: 0; transform: translateY(10px); transition: 0.4s ease; }
+        .app-step.active { display: block; opacity: 1; transform: translateY(0); }
+        
+        /* THE GHOST */
+        #morph-ghost { position: fixed; z-index: 1000; pointer-events: none; opacity: 0; background: #fff; border-radius: 14px; }
+        .loader { width: 14px; height: 14px; border: 2px solid #000; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; margin-right: 8px; }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* GNOME ACTION ROW */
+        .action-row { display: flex; gap: 12px; margin-top: 30px; }
+        .action-row .btn { flex: 1; }
     </style>
 </head>
 <body>
 
+<div id="page-transition"></div>
+
 <nav>
-    <div class="nav-logo"><img src="https://raw.githubusercontent.com/veltheriansmp/velthriansmp.github.io/main/assets/logo.png"></div>
-    <div class="nav-links">
-        <a href="index.html" class="active">Dashboard</a>
-        <a href="staff.html">Staff Directory</a>
+    <div class="nav-container">
+        <div class="nav-logo"><img src="https://raw.githubusercontent.com/veltheriansmp/velthriansmp.github.io/main/assets/logo.png"></div>
+        <div class="nav-links">
+            <a href="index.html" class="active">Dashboard</a>
+            <a href="staff.html">Staff Directory</a>
+        </div>
     </div>
 </nav>
 
 <section class="hero">
+    <div class="event-banner" style="margin-bottom: 20px; padding: 10px 20px; border: 1px solid var(--gold); border-radius: 12px; background: rgba(226, 183, 73, 0.1); display: inline-block;">
+        <span style="color: var(--gold); font-weight: 600; font-size: 13px;">⚠️ NEXT EVENT: Saturday 7PM - THE MACE SNATCH</span>
+    </div>
+    
     <img src="https://raw.githubusercontent.com/veltheriansmp/velthriansmp.github.io/main/assets/logo.png" class="hero-logo">
     <h1>Veltherian<br><span style="color: var(--gold);">SMP</span></h1>
-    <p>The definitive private network for creators. Experience quality and community hierarchy.</p>
+    <p>The definitive private network for creators. Applications are currently open.</p>
     <div class="cta-group">
         <button id="join-btn" class="btn btn-primary" onclick="morphToJoin()">Join the Network</button>
         <a href="staff.html" class="btn btn-secondary">Administrative Core</a>
@@ -109,9 +106,9 @@
 
 <div id="morph-ghost"></div>
 
-<div class="overlay" id="join-overlay">
+<div class="overlay" id="join-overlay" onclick="if(event.target===this)closeJoinModal()">
     <div class="modal" id="join-modal">
-        <!-- STEP 1: ENHANCED FORM -->
+        <!-- STEP 1: ENROLLMENT FORM -->
         <div id="step-1" class="app-step active">
             <div class="m-title"><h2>Enrollment</h2><p>Administrative Entry</p></div>
             
@@ -143,24 +140,26 @@
                 </div>
             </div>
 
-            <button id="submit-req" class="btn btn-primary" style="width:100%; margin-top: 10px;" onclick="submitApplication()">Submit Application</button>
+            <!-- GNOME-STYLE ACTION ROW -->
+            <div class="action-row">
+                <button class="btn btn-secondary" onclick="closeJoinModal()">Cancel</button>
+                <button id="submit-req" class="btn btn-primary" onclick="submitApplication()">Submit</button>
+            </div>
         </div>
 
+        <!-- STEP 2: REVIEW -->
         <div id="step-2" class="app-step">
-            <div class="m-title"><h2>Review</h2><p>Step 2: Processing</p></div>
-            <p class="desc">Data encrypted and sent. A Moderator will reach out on Discord for your verification interview.</p>
-            <button class="btn btn-primary" style="width:100%" onclick="nextStep(3)">Understood</button>
-        </div>
-
-        <div id="step-3" class="app-step">
-            <div class="m-title"><h2>Complete</h2><p>Step 3: Finalized</p></div>
-            <p class="desc">Portal session closing. See you on the network.</p>
-            <button class="btn btn-secondary" style="width:100%" onclick="closeJoinModal()">Exit</button>
+            <div class="m-title"><h2>Review</h2><p>Processing</p></div>
+            <p style="opacity: 0.7; margin-bottom: 30px;">Data encrypted and sent. A Moderator will reach out on Discord for your verification interview.</p>
+            <button class="btn btn-primary" style="width:100%" onclick="closeJoinModal()">Understood</button>
         </div>
     </div>
 </div>
 
 <script>
+    // Transition Logic
+    window.onload = () => document.body.classList.add('loaded');
+
     const _0x4a21 = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTUwMjExMDg1NTA3NTA3NDA1MC9JWXZvY0liU3Q1VFNtUi1uRENpMEctUzcwU0ZMRUJ2ZHpzR1N3c1FxWHdSa3Z0Y09YWEhPRTQ0NmxTVm5ZcVZYcmtOUA=="; 
     let hasSocial = true;
 
@@ -168,7 +167,9 @@
         hasSocial = val;
         document.getElementById('toggle-yes').classList.toggle('active', val);
         document.getElementById('toggle-no').classList.toggle('active', !val);
-        document.getElementById('social-section').classList.toggle('social-locked', !val);
+        const section = document.getElementById('social-section');
+        section.style.opacity = val ? "1" : "0.2";
+        section.style.pointerEvents = val ? "all" : "none";
     }
 
     function addSocialInput() {
@@ -192,7 +193,7 @@
 
         if(!ign || !discord || !reason) return alert("Please fill all required fields.");
 
-        btn.innerHTML = '<span class="loader"></span> Sending...';
+        btn.innerHTML = '<span class="loader"></span> Sending';
         btn.disabled = true;
 
         try {
@@ -214,15 +215,15 @@
             };
 
             await fetch(hook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            nextStep(2);
+            document.getElementById('step-1').classList.remove('active');
+            document.getElementById('step-2').classList.add('active');
         } catch (err) {
             alert("Connection error.");
-            btn.innerHTML = 'Submit Application';
+            btn.innerHTML = 'Submit';
             btn.disabled = false;
         }
     }
 
-    // Morph Logic
     function morphToJoin() {
         const btn = document.getElementById('join-btn');
         const ghost = document.getElementById('morph-ghost');
@@ -230,25 +231,23 @@
         const modal = document.getElementById('join-modal');
         const rect = btn.getBoundingClientRect();
         
-        ghost.style.transition = 'none';
-        ghost.style.display = 'block';
-        ghost.style.opacity = '1';
         ghost.style.top = rect.top + 'px';
         ghost.style.left = rect.left + 'px';
         ghost.style.width = rect.width + 'px';
         ghost.style.height = rect.height + 'px';
-        ghost.offsetHeight;
+        ghost.style.opacity = '1';
+        ghost.style.transition = 'all 0.6s var(--m3-ease)';
 
         overlay.style.display = 'grid';
-        const modalRect = modal.getBoundingClientRect();
-
-        ghost.style.transition = 'all 0.6s var(--m3-ease)';
-        ghost.style.top = modalRect.top + 'px';
-        ghost.style.left = modalRect.left + 'px';
-        ghost.style.width = modalRect.width + 'px';
-        ghost.style.height = modalRect.height + 'px';
-        ghost.style.borderRadius = '32px';
-        ghost.style.background = '#0d0d11';
+        setTimeout(() => {
+            const mRect = modal.getBoundingClientRect();
+            ghost.style.top = mRect.top + 'px';
+            ghost.style.left = mRect.left + 'px';
+            ghost.style.width = mRect.width + 'px';
+            ghost.style.height = mRect.height + 'px';
+            ghost.style.borderRadius = '32px';
+            ghost.style.background = '#0d0d11';
+        }, 10);
 
         setTimeout(() => {
             overlay.classList.add('active');
@@ -257,19 +256,28 @@
     }
 
     function closeJoinModal() {
-        const overlay = document.getElementById('join-overlay');
-        overlay.classList.remove('active');
+        document.getElementById('join-overlay').classList.remove('active');
         setTimeout(() => {
-            overlay.style.display = 'none';
-            document.getElementById('morph-ghost').style.display = 'none';
-            nextStep(1);
+            document.getElementById('join-overlay').style.display = 'none';
+            document.getElementById('morph-ghost').style.opacity = '0';
+            document.getElementById('step-1').classList.add('active');
+            document.getElementById('step-2').classList.remove('active');
+            document.getElementById('submit-req').disabled = false;
+            document.getElementById('submit-req').innerHTML = 'Submit';
         }, 400);
     }
-
-    function nextStep(n) {
-        document.querySelectorAll('.app-step').forEach(s => s.classList.remove('active'));
-        document.getElementById('step-' + n).classList.add('active');
-    }
+    
+    // Page Exit Transitions
+    document.querySelectorAll('.nav-links a, .btn-secondary').forEach(link => {
+        link.addEventListener('click', e => {
+            const href = link.getAttribute('href');
+            if(href && href.includes('.html')) {
+                e.preventDefault();
+                document.body.classList.remove('loaded');
+                setTimeout(() => window.location.href = href, 500);
+            }
+        });
+    });
 </script>
 </body>
 </html>
