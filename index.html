@@ -3,112 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloudrend SMP | Dashboard</title>
+    <title>Cloudrend SMP</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
-        body { background-color: #FEF7FF; color: #1C1B1F; font-family: sans-serif; }
+        body { background-color: #F3F0F8; font-family: sans-serif; color: #1C1B1F; }
+        .m3-card { background: #EADDFF; border-radius: 28px; transition: all 0.2s; }
+        .m3-input { background: #F7F2FA; border: 1px solid #79747E; border-radius: 8px; height: 56px; padding: 0 16px; width: 100%; outline: none; }
+        .m3-input:focus { border: 2px solid #6750A4; }
         .spinner { border: 4px solid #EADDFF; border-top: 4px solid #6750A4; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen">
 
-    <div id="loader" class="fixed inset-0 z-[100] bg-[#FEF7FF] flex flex-col items-center justify-center gap-4">
+    <div id="loader" class="fixed inset-0 z-[100] bg-[#F3F0F8] flex flex-col items-center justify-center gap-4">
         <div class="spinner"></div>
-        <p class="text-[#6750A4] font-medium animate-pulse">Checking session...</p>
+        <p class="text-[#6750A4] font-medium">Loading Cloudrend SMP...</p>
     </div>
 
-    <div id="banned-screen" class="hidden fixed inset-0 z-[90] bg-[#FFF8F7] flex flex-col items-center justify-center p-6 text-center">
-        <span class="material-symbols-outlined text-[#BA1A1A] text-7xl mb-4">gavel</span>
-        <h1 class="text-4xl font-bold text-[#1C1B1F] mb-2">Access Revoked</h1>
-        <div class="bg-[#F3EDF7] p-6 rounded-[28px] border border-[#BA1A1A]/20 mb-6 max-w-md">
-            <p id="ban-reason" class="text-[#410002] font-mono">Reason loading...</p>
+    <div id="banned-screen" class="hidden fixed inset-0 z-[90] bg-white flex flex-col items-center justify-center p-6 text-center">
+        <h1 class="text-3xl font-bold mb-4">You are banned from the SMP</h1>
+        <p class="text-sm text-gray-600 mb-6">Seriously, what did you even do? T_T</p>
+        <div class="w-24 h-24 bg-gray-200 rounded-full mb-6 flex items-center justify-center overflow-hidden">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=banned" alt="banned">
         </div>
-        <button onclick="logout()" class="px-8 py-3 bg-[#BA1A1A] text-white rounded-full font-medium shadow-lg active:scale-95 transition-all">Sign Out</button>
+        <p class="text-xs text-gray-500 max-w-xs mb-8">You are banned on Cloudrend SMP for doing the following actions. You have 180 days to appeal or get locked out of your own account.</p>
+        <div class="bg-black text-white p-4 rounded-lg text-xs mb-8">
+            REASON: <span id="ban-reason" class="opacity-70">Loading...</span>
+        </div>
+        <button onclick="logout()" class="bg-[#6750A4] text-white px-8 py-2 rounded-full">Log out</button>
     </div>
 
-    <nav class="h-20 flex justify-between items-center px-8 border-b border-[#CAC4D0]">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-[#6750A4] rounded-lg flex items-center justify-center">
-                <span class="material-symbols-outlined text-white">cloud</span>
+    <div id="main-hub" class="max-w-6xl mx-auto p-6">
+        <header class="flex justify-between items-center mb-12">
+            <span class="font-bold text-lg">Cloudrend SMP</span>
+            <div id="nav-auth">
+                <button onclick="openLogin()" class="bg-[#EADDFF] px-6 py-2 rounded-full text-sm font-medium">Login</button>
             </div>
-            <span class="text-xl font-bold tracking-tight">Cloudrend Hub</span>
-        </div>
-        <div id="user-nav">
-            <button onclick="openModal()" class="bg-[#6750A4] text-white px-6 py-2 rounded-full text-sm font-medium hover:shadow-md transition-all">Login</button>
-        </div>
-    </nav>
+        </header>
 
-    <main class="flex-1 p-8 max-w-6xl mx-auto w-full">
-        <div class="mb-12">
-            <h1 class="text-5xl font-light mb-4">Welcome back, <span id="display-name" class="font-bold text-[#6750A4]">Player</span></h1>
-            <p class="text-[#49454F]">Your central gateway to the Cloudrend SMP ecosystem.</p>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+            <div class="m3-card p-12 flex flex-col justify-center">
+                <h1 class="text-5xl font-light mb-6">Welcome to <br><span class="font-bold">Cloudrend SMP</span></h1>
+                <p class="text-gray-600 mb-8">A newly launched SMP that has been recently started!</p>
+                <button class="bg-[#6750A4] text-white w-fit px-8 py-3 rounded-full flex items-center gap-2">
+                    Apply and Join! <span class="text-xs">▼</span>
+                </button>
+            </div>
+            <div class="rounded-[28px] overflow-hidden shadow-xl">
+                <img src="https://i.imgur.com/8N4p4nS.png" class="w-full h-full object-cover" alt="SMP Screenshot">
+            </div>
         </div>
 
+        <h2 class="text-2xl font-bold mb-8">What we offer?</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-[#F3EDF7] p-8 rounded-[32px] hover:bg-[#EADDFF] transition-colors cursor-pointer group">
-                <span class="material-symbols-outlined text-[#6750A4] mb-4">dns</span>
-                <h3 class="text-xl font-bold mb-2">Server Status</h3>
-                <p class="text-sm text-[#49454F]">Neon Database: Connected</p>
+            <div class="bg-gray-200/50 p-6 rounded-[28px] h-64">
+                <div class="bg-gray-300 w-full h-32 rounded-xl mb-4"></div>
+                <h3 class="font-bold">Starter Kit!</h3>
+                <p class="text-xs text-gray-500">Iron Armor & Tools!</p>
             </div>
+            <div class="bg-gray-200/50 p-6 rounded-[28px] h-64">
+                <div class="bg-gray-300 w-full h-32 rounded-xl mb-4"></div>
+                <h3 class="font-bold">Starter Kit!</h3>
+                <p class="text-xs text-gray-500">Iron Armor & Tools!</p>
             </div>
-    </main>
+            <div class="bg-gray-200/50 p-6 rounded-[28px] h-64">
+                <div class="bg-gray-300 w-full h-32 rounded-xl mb-4"></div>
+                <h3 class="font-bold">Starter Kit!</h3>
+                <p class="text-xs text-gray-500">Iron Armor & Tools!</p>
+            </div>
+        </div>
+    </div>
 
     <div id="login-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
-        <div class="bg-[#F7F2FA] w-full max-w-sm rounded-[28px] p-8 shadow-2xl scale-in">
-            <h2 class="text-2xl font-normal text-center mb-8">SMP Portal</h2>
+        <div class="bg-[#F7F2FA] w-full max-w-sm rounded-[28px] p-8 shadow-2xl">
+            <div class="text-center mb-8 text-gray-500"><span class="material-symbols-outlined">lock</span></div>
+            <h2 class="text-xl font-medium text-center mb-2">Login</h2>
+            <p class="text-[10px] text-center text-gray-400 mb-8 px-4">Login with your CloudrendSMP Account (unlinked accounts, you must remember the password everywhere or you lose everything)</p>
             <div class="space-y-4">
-                <input id="u-in" type="text" placeholder="Username" class="w-full h-14 border border-[#79747E] rounded-md bg-transparent px-4 outline-none focus:border-2 focus:border-[#6750A4]">
-                <input id="p-in" type="password" placeholder="Password" class="w-full h-14 border border-[#79747E] rounded-md bg-transparent px-4 outline-none focus:border-2 focus:border-[#6750A4]">
-                <button onclick="auth()" class="w-full h-12 bg-[#6750A4] text-white rounded-full font-medium active:scale-95 transition-all">Connect</button>
-                <button onclick="closeModal()" class="w-full h-12 text-[#6750A4] font-medium">Cancel</button>
+                <input id="u" type="text" placeholder="Username" class="m3-input">
+                <input id="p" type="password" placeholder="Password" class="m3-input">
+                <div class="flex gap-2">
+                    <button onclick="handleLogin()" class="flex-1 h-12 bg-[#D0BCFF] text-[#381E72] rounded-full font-bold text-xs uppercase">Login</button>
+                    <button onclick="closeLogin()" class="flex-1 h-12 bg-[#F2B8B5] text-[#601410] rounded-full font-bold text-xs uppercase">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const loader = document.getElementById('loader');
-        const banned = document.getElementById('banned-screen');
-
         window.onload = () => {
-            const session = localStorage.getItem('smp_session');
+            const session = localStorage.getItem('cr_session');
             if (session) {
                 const user = JSON.parse(session);
-                document.getElementById('display-name').innerText = user.username;
                 if (user.status === 'banned') {
-                    document.getElementById('ban-reason').innerText = user.ban_reason;
-                    banned.classList.remove('hidden');
+                    document.getElementById('ban-reason').innerText = user.ban_reason || 'Violation of rules.';
+                    document.getElementById('banned-screen').classList.remove('hidden');
+                } else {
+                    document.getElementById('nav-auth').innerHTML = `<span class="font-bold text-[#6750A4] mr-4">${user.username}</span><button onclick="logout()" class="text-xs text-gray-500 uppercase font-bold">Logout</button>`;
                 }
-                document.getElementById('user-nav').innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <span class="text-sm font-bold text-[#6750A4]">${user.username}</span>
-                        <button onclick="logout()" class="material-symbols-outlined text-[#49454F]">logout</button>
-                    </div>`;
             }
-            loader.classList.add('hidden');
+            document.getElementById('loader').classList.add('hidden');
         };
 
-        async function auth() {
-            loader.classList.remove('hidden');
-            const res = await fetch('/api/auth', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username: document.getElementById('u-in').value, password: document.getElementById('p-in').value})
-            });
-            const data = await res.json();
-            if (res.ok) {
-                localStorage.setItem('smp_session', JSON.stringify(data));
-                location.reload();
-            } else {
-                alert(data.error);
-                loader.classList.add('hidden');
+        async function handleLogin() {
+            document.getElementById('loader').classList.remove('hidden');
+            try {
+                const res = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: u.value, password: p.value})
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('cr_session', JSON.stringify(data));
+                    location.reload();
+                } else {
+                    alert(data.error);
+                    document.getElementById('loader').classList.add('hidden');
+                }
+            } catch (e) {
+                alert("Database connection error!");
+                document.getElementById('loader').classList.add('hidden');
             }
         }
 
-        function logout() { localStorage.removeItem('smp_session'); location.reload(); }
-        function openModal() { document.getElementById('login-modal').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('login-modal').classList.add('hidden'); }
+        function logout() { localStorage.removeItem('cr_session'); location.reload(); }
+        function openLogin() { document.getElementById('login-modal').classList.remove('hidden'); }
+        function closeLogin() { document.getElementById('login-modal').classList.add('hidden'); }
     </script>
 </body>
 </html>
