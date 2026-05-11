@@ -1,136 +1,747 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloudrend SMP</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #F3F0F8; font-family: sans-serif; color: #1C1B1F; }
-        .m3-card { background: #EADDFF; border-radius: 28px; transition: all 0.2s; }
-        .m3-input { background: #F7F2FA; border: 1px solid #79747E; border-radius: 8px; height: 56px; padding: 0 16px; width: 100%; outline: none; }
-        .m3-input:focus { border: 2px solid #6750A4; }
-        .spinner { border: 4px solid #EADDFF; border-top: 4px solid #6750A4; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
-</head>
-<body class="min-h-screen">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloudrend SMP</title>
 
-    <div id="loader" class="fixed inset-0 z-[100] bg-[#F3F0F8] flex flex-col items-center justify-center gap-4">
-        <div class="spinner"></div>
-        <p class="text-[#6750A4] font-medium">Loading Cloudrend SMP...</p>
-    </div>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <div id="banned-screen" class="hidden fixed inset-0 z-[90] bg-white flex flex-col items-center justify-center p-6 text-center">
-        <h1 class="text-3xl font-bold mb-4">You are banned from the SMP</h1>
-        <p class="text-sm text-gray-600 mb-6">Seriously, what did you even do? T_T</p>
-        <div class="w-24 h-24 bg-gray-200 rounded-full mb-6 flex items-center justify-center overflow-hidden">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=banned" alt="banned">
-        </div>
-        <p class="text-xs text-gray-500 max-w-xs mb-8">You are banned on Cloudrend SMP for doing the following actions. You have 180 days to appeal or get locked out of your own account.</p>
-        <div class="bg-black text-white p-4 rounded-lg text-xs mb-8">
-            REASON: <span id="ban-reason" class="opacity-70">Loading...</span>
-        </div>
-        <button onclick="logout()" class="bg-[#6750A4] text-white px-8 py-2 rounded-full">Log out</button>
-    </div>
+  <!-- Material Symbols Rounded -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 
-    <div id="main-hub" class="max-w-6xl mx-auto p-6">
-        <header class="flex justify-between items-center mb-12">
-            <span class="font-bold text-lg">Cloudrend SMP</span>
-            <div id="nav-auth">
-                <button onclick="openLogin()" class="bg-[#EADDFF] px-6 py-2 rounded-full text-sm font-medium">Login</button>
-            </div>
-        </header>
+  <!-- Fonts: Nunito (body) + Syne (display) — matches the soft/rounded MD3 feel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-            <div class="m3-card p-12 flex flex-col justify-center">
-                <h1 class="text-5xl font-light mb-6">Welcome to <br><span class="font-bold">Cloudrend SMP</span></h1>
-                <p class="text-gray-600 mb-8">A newly launched SMP that has been recently started!</p>
-                <button class="bg-[#6750A4] text-white w-fit px-8 py-3 rounded-full flex items-center gap-2">
-                    Apply and Join! <span class="text-xs">▼</span>
-                </button>
-            </div>
-            <div class="rounded-[28px] overflow-hidden shadow-xl">
-                <img src="https://i.imgur.com/8N4p4nS.png" class="w-full h-full object-cover" alt="SMP Screenshot">
-            </div>
-        </div>
+  <style>
+    :root {
+      --md-primary: #6750A4;
+      --md-primary-container: #EADDFF;
+      --md-on-primary-container: #21005D;
+      --md-secondary: #625B71;
+      --md-surface: #FFFBFE;
+      --md-surface-variant: #E7E0EC;
+      --md-on-surface: #1C1B1F;
+      --md-on-surface-variant: #49454F;
+      --md-outline: #79747E;
+      --md-error: #B3261E;
+      --md-error-container: #F9DEDC;
+      --md-on-error-container: #410E0B;
+      --md-shadow: 0 2px 8px rgba(103,80,164,0.10), 0 1px 2px rgba(103,80,164,0.06);
+      --md-shadow-lg: 0 4px 24px rgba(103,80,164,0.13), 0 2px 6px rgba(103,80,164,0.08);
+    }
 
-        <h2 class="text-2xl font-bold mb-8">What we offer?</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-gray-200/50 p-6 rounded-[28px] h-64">
-                <div class="bg-gray-300 w-full h-32 rounded-xl mb-4"></div>
-                <h3 class="font-bold">Starter Kit!</h3>
-                <p class="text-xs text-gray-500">Iron Armor & Tools!</p>
-            </div>
-            <div class="bg-gray-200/50 p-6 rounded-[28px] h-64">
-                <div class="bg-gray-300 w-full h-32 rounded-xl mb-4"></div>
-                <h3 class="font-bold">Starter Kit!</h3>
-                <p class="text-xs text-gray-500">Iron Armor & Tools!</p>
-            </div>
-            <div class="bg-gray-200/50 p-6 rounded-[28px] h-64">
-                <div class="bg-gray-300 w-full h-32 rounded-xl mb-4"></div>
-                <h3 class="font-bold">Starter Kit!</h3>
-                <p class="text-xs text-gray-500">Iron Armor & Tools!</p>
-            </div>
-        </div>
-    </div>
+    * { box-sizing: border-box; }
 
-    <div id="login-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
-        <div class="bg-[#F7F2FA] w-full max-w-sm rounded-[28px] p-8 shadow-2xl">
-            <div class="text-center mb-8 text-gray-500"><span class="material-symbols-outlined">lock</span></div>
-            <h2 class="text-xl font-medium text-center mb-2">Login</h2>
-            <p class="text-[10px] text-center text-gray-400 mb-8 px-4">Login with your CloudrendSMP Account (unlinked accounts, you must remember the password everywhere or you lose everything)</p>
-            <div class="space-y-4">
-                <input id="u" type="text" placeholder="Username" class="m3-input">
-                <input id="p" type="password" placeholder="Password" class="m3-input">
-                <div class="flex gap-2">
-                    <button onclick="handleLogin()" class="flex-1 h-12 bg-[#D0BCFF] text-[#381E72] rounded-full font-bold text-xs uppercase">Login</button>
-                    <button onclick="closeLogin()" class="flex-1 h-12 bg-[#F2B8B5] text-[#601410] rounded-full font-bold text-xs uppercase">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--md-surface);
+      color: var(--md-on-surface);
+      min-height: 100vh;
+      margin: 0;
+    }
 
-    <script>
-        window.onload = () => {
-            const session = localStorage.getItem('cr_session');
-            if (session) {
-                const user = JSON.parse(session);
-                if (user.status === 'banned') {
-                    document.getElementById('ban-reason').innerText = user.ban_reason || 'Violation of rules.';
-                    document.getElementById('banned-screen').classList.remove('hidden');
-                } else {
-                    document.getElementById('nav-auth').innerHTML = `<span class="font-bold text-[#6750A4] mr-4">${user.username}</span><button onclick="logout()" class="text-xs text-gray-500 uppercase font-bold">Logout</button>`;
-                }
-            }
-            document.getElementById('loader').classList.add('hidden');
-        };
+    .material-symbols-rounded {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
 
-        async function handleLogin() {
-            document.getElementById('loader').classList.remove('hidden');
-            try {
-                const res = await fetch('/api/auth', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({username: u.value, password: p.value})
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    localStorage.setItem('cr_session', JSON.stringify(data));
-                    location.reload();
-                } else {
-                    alert(data.error);
-                    document.getElementById('loader').classList.add('hidden');
-                }
-            } catch (e) {
-                alert("Database connection error!");
-                document.getElementById('loader').classList.add('hidden');
-            }
+    /* MD3 Cards */
+    .md-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: var(--md-shadow);
+      overflow: hidden;
+    }
+    .md-card-elevated {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: var(--md-shadow-lg);
+    }
+
+    /* MD3 Filled Button */
+    .btn-filled {
+      background: var(--md-primary);
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      padding: 10px 24px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.1px;
+      cursor: pointer;
+      transition: box-shadow 0.15s, filter 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-filled:hover { filter: brightness(1.08); box-shadow: var(--md-shadow); }
+    .btn-filled:active { filter: brightness(0.96); }
+    .btn-filled.danger { background: var(--md-error); }
+
+    /* MD3 Outlined Button */
+    .btn-outlined {
+      background: transparent;
+      color: var(--md-primary);
+      border: 1.5px solid var(--md-outline);
+      border-radius: 100px;
+      padding: 9px 24px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-outlined:hover { background: rgba(103,80,164,0.06); }
+
+    /* MD3 Text Field */
+    .md-field {
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .md-field input {
+      width: 100%;
+      border: 1.5px solid var(--md-outline);
+      border-radius: 10px;
+      padding: 14px 14px 14px 42px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      color: var(--md-on-surface);
+      background: var(--md-surface-variant);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .md-field input:focus { border-color: var(--md-primary); background: #fff; }
+    .md-field .field-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--md-on-surface-variant);
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    /* Skeleton loader */
+    .skeleton {
+      background: linear-gradient(90deg, #e7e0ec 25%, #f3eeff 50%, #e7e0ec 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 12px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Page transitions */
+    .page { display: none; animation: fadeIn 0.25s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ---- BANNED OVERLAY ---- */
+    #banned-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--md-surface);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 24px;
+      animation: fadeIn 0.3s ease;
+    }
+    #banned-overlay.show { display: flex; }
+
+    .banned-card {
+      background: var(--md-error-container);
+      border-radius: 28px;
+      padding: 40px 36px 32px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 8px 40px rgba(179,38,30,0.15);
+    }
+    .banned-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--md-error);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .banned-icon-wrap .material-symbols-rounded {
+      color: #fff;
+      font-size: 36px;
+    }
+
+    /* Navbar */
+    nav {
+      background: #fff;
+      border-bottom: 1px solid var(--md-surface-variant);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 4px rgba(103,80,164,0.07);
+    }
+
+    /* Login panel */
+    .login-panel {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: var(--md-shadow-lg);
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #313033;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 10000;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.error { background: var(--md-error); }
+
+    /* Hero gradient */
+    .hero-gradient {
+      background: linear-gradient(135deg, #EDE7F6 0%, #D1C4E9 60%, #B39DDB 100%);
+    }
+
+    /* Status chip */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .chip.active { background: #E8F5E9; color: #2E7D32; }
+    .chip.banned { background: var(--md-error-container); color: var(--md-error); }
+
+    /* Tab switcher (login/register) */
+    .tab-bar {
+      display: flex;
+      border-bottom: 1.5px solid var(--md-surface-variant);
+      margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1;
+      padding: 10px 0;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--md-on-surface-variant);
+      cursor: pointer;
+      border-bottom: 2.5px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      margin-bottom: -1.5px;
+    }
+    .tab.active {
+      color: var(--md-primary);
+      border-bottom-color: var(--md-primary);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d0c8e0; border-radius: 99px; }
+  </style>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Nunito','sans-serif'], display: ['Syne','sans-serif'] }
         }
+      }
+    }
+  </script>
+</head>
+<body>
 
-        function logout() { localStorage.removeItem('cr_session'); location.reload(); }
-        function openLogin() { document.getElementById('login-modal').classList.remove('hidden'); }
-        function closeLogin() { document.getElementById('login-modal').classList.add('hidden'); }
-    </script>
+<!-- ==============================
+     BANNED OVERLAY
+     Shown immediately if API returns status === 'banned'
+============================== -->
+<div id="banned-overlay" role="alertdialog" aria-modal="true" aria-label="Banned from SMP">
+  <div class="banned-card">
+    <div class="banned-icon-wrap">
+      <span class="material-symbols-rounded">gavel</span>
+    </div>
+    <h1 style="font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:var(--md-on-error-container); margin:0 0 6px;">
+      You are banned from the SMP
+    </h1>
+    <p style="color:var(--md-on-error-container); opacity:0.7; font-size:14px; margin:0 0 20px;">
+      Seriously, what did you do. 7.7
+    </p>
+
+    <!-- Avatar placeholder -->
+    <div style="width:72px;height:72px;border-radius:50%;background:#c2a8f0;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
+      <span class="material-symbols-rounded" style="font-size:36px;color:#fff;">person</span>
+    </div>
+
+    <p style="font-size:13px; color:var(--md-on-error-container); line-height:1.6; margin:0 0 8px;">
+      You are banned on <strong>Cloudrend SMP</strong> for doing the following actions. You have <strong>188 days</strong> to appeal or get kicked out of your own account.
+    </p>
+    <div style="background:rgba(179,38,30,0.12);border-radius:12px;padding:10px 14px;margin-bottom:24px;text-align:left;">
+      <p style="font-size:12px;color:var(--md-on-error-container);margin:0;font-weight:600;">
+        Reason: <span id="ban-reason-text">SMP AFK ops. We can not tolerate this type of actions.</span>
+      </p>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-outlined" onclick="window.open('https://discord.gg/your-appeal-link','_blank')" style="border-color:var(--md-error);color:var(--md-error);">
+        <span class="material-symbols-rounded" style="font-size:18px;">open_in_new</span>
+        Appeal
+      </button>
+      <button class="btn-filled danger" onclick="logout()">
+        <span class="material-symbols-rounded" style="font-size:18px;">logout</span>
+        Log out
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom status bar — matches design screenshot -->
+  <div style="position:fixed;bottom:0;left:0;right:0;background:#313033;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;">
+    <span style="color:#fff;font-size:13px;font-weight:600;">
+      <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle;margin-right:4px;">block</span>
+      You are banned from this Server
+    </span>
+    <span class="chip banned">ACCOUNT STATUS</span>
+  </div>
+</div>
+
+<!-- ==============================
+     TOAST NOTIFICATION
+============================== -->
+<div id="toast">
+  <span class="material-symbols-rounded" id="toast-icon" style="font-size:18px;">info</span>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- ==============================
+     LOADING SCREEN
+============================== -->
+<div id="loading-screen" style="position:fixed;inset:0;background:var(--md-surface);z-index:9000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+  <div style="width:48px;height:48px;border:3.5px solid var(--md-primary-container);border-top-color:var(--md-primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+  <p style="color:var(--md-on-surface-variant);font-weight:600;font-size:14px;">Loading Cloudrend SMP…</p>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+</div>
+
+<!-- ==============================
+     NAVBAR
+============================== -->
+<nav id="main-nav" style="display:none;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="#" style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--md-primary);text-decoration:none;letter-spacing:-0.3px;">
+      Cloudrend SMP
+    </a>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="nav-username" style="font-size:14px;font-weight:700;color:var(--md-on-surface-variant);"></span>
+      <button class="btn-outlined" onclick="logout()" style="padding:7px 16px;font-size:13px;">
+        <span class="material-symbols-rounded" style="font-size:16px;">logout</span>
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ==============================
+     MAIN CONTENT WRAPPER
+============================== -->
+<main id="main-content" style="display:none;max-width:1200px;margin:0 auto;padding:32px 24px;">
+
+  <!-- Hero -->
+  <div class="hero-gradient md-card" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:40px;margin-bottom:28px;border-radius:24px;">
+    <div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,40px);font-weight:800;margin:0 0 8px;color:#21005D;line-height:1.1;">
+        Welcome to<br/>Cloudrend SMP
+      </h1>
+      <p style="color:#4527A0;font-size:15px;margin:0 0 20px;font-weight:600;">
+        A newly launched SMP that has been recently started!
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn-filled" onclick="showToast('Coming soon!','schedule')">
+          <span class="material-symbols-rounded" style="font-size:18px;">public</span>
+          Apply now →
+        </button>
+        <button class="btn-outlined" onclick="showToast('Opening Discord…','discord')">
+          Discord
+        </button>
+      </div>
+    </div>
+    <div style="width:180px;height:140px;background:rgba(103,80,164,0.15);border-radius:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+      <span class="material-symbols-rounded" style="font-size:80px;color:rgba(103,80,164,0.3);">terrain</span>
+    </div>
+  </div>
+
+  <!-- What we offer -->
+  <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin:0 0 16px;">What we offer?</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:32px;">
+    <!-- Offer cards -->
+    <div class="md-card" style="padding:20px;">
+      <div style="width:44px;height:44px;border-radius:12px;background:var(--md-primary-container);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        <span class="material-symbols-rounded" style="color:var(--md-primary);">inventory_2</span>
+      </div>
+      <h3 style="font-weight:800;font-size:15px;margin:0 0 6px;">Starter Kit!</h3>
+      <p style="font-size:12px;color:var(--md-on-surface-variant);line-height:1.5;margin:0;font-weight:600;">from Arthur &amp; Toolkit</p>
+      <p style="font-size:13px;color:var(--md-on-surface-variant);line-height:1.6;margin-top:8px;">
+        Starter Kit allows you to properly prepare for each big events like, dropping your iron to start out so it can thank you for joining the server!
+      </p>
+    </div>
+    <div class="md-card" style="padding:20px;">
+      <div style="width:44px;height:44px;border-radius:12px;background:#E3F2FD;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        <span class="material-symbols-rounded" style="color:#1565C0;">diamond</span>
+      </div>
+      <h3 style="font-weight:800;font-size:15px;margin:0 0 6px;">Starter Kit!</h3>
+      <p style="font-size:12px;color:var(--md-on-surface-variant);line-height:1.5;margin:0;font-weight:600;">from Arthur &amp; Toolkit</p>
+      <p style="font-size:13px;color:var(--md-on-surface-variant);line-height:1.6;margin-top:8px;">
+        Starter Kit allows you to properly prepare for each big events like, dropping your iron to start out so it can thank you for joining the server!
+      </p>
+    </div>
+    <div class="md-card" style="padding:20px;">
+      <div style="width:44px;height:44px;border-radius:12px;background:#E8F5E9;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        <span class="material-symbols-rounded" style="color:#2E7D32;">forest</span>
+      </div>
+      <h3 style="font-weight:800;font-size:15px;margin:0 0 6px;">Starter Kit!</h3>
+      <p style="font-size:12px;color:var(--md-on-surface-variant);line-height:1.5;margin:0;font-weight:600;">from Arthur &amp; Toolkit</p>
+      <p style="font-size:13px;color:var(--md-on-surface-variant);line-height:1.6;margin-top:8px;">
+        Starter Kit allows you to properly prepare for each big events like, dropping your iron to start out so it can thank you for joining the server!
+      </p>
+    </div>
+  </div>
+
+  <!-- Account status card -->
+  <div class="md-card" style="padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+    <span class="material-symbols-rounded" style="font-size:32px;color:var(--md-primary);">account_circle</span>
+    <div style="flex:1;">
+      <p style="margin:0;font-weight:800;" id="dashboard-username">—</p>
+      <p style="margin:0;font-size:13px;color:var(--md-on-surface-variant);">Logged in via SMP Hub</p>
+    </div>
+    <span class="chip active" id="dashboard-status">active</span>
+  </div>
+
+</main>
+
+<!-- ==============================
+     AUTH PANEL (not logged in)
+============================== -->
+<div id="auth-panel" style="display:none;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#F3E5F5 0%,#EDE7F6 60%,#D1C4E9 100%);">
+  <div style="width:100%;max-width:360px;">
+
+    <!-- Branding -->
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="width:56px;height:56px;border-radius:16px;background:var(--md-primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+        <span class="material-symbols-rounded" style="color:#fff;font-size:28px;">dns</span>
+      </div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin:0;color:var(--md-primary);">Cloudrend SMP</h1>
+    </div>
+
+    <div class="md-card-elevated" style="padding:28px 24px;border-radius:24px;">
+
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <div class="tab active" id="tab-login" onclick="switchTab('login')">Login</div>
+        <div class="tab" id="tab-register" onclick="switchTab('register')">Register</div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="form-login">
+        <p style="font-size:13px;color:var(--md-on-surface-variant);margin:0 0 16px;font-weight:600;">
+          Login with your Cloudrend SMP hub to access limited in-game<br/>features.
+        </p>
+        <div class="md-field">
+          <span class="material-symbols-rounded field-icon">person</span>
+          <input type="text" id="login-username" placeholder="Username" autocomplete="username" />
+        </div>
+        <div class="md-field">
+          <span class="material-symbols-rounded field-icon">lock</span>
+          <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" />
+        </div>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <button class="btn-filled" style="flex:1;justify-content:center;" onclick="handleLogin()">Login</button>
+          <button class="btn-outlined" style="padding:10px 18px;" onclick="switchTab('register')">Cancel</button>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="form-register" style="display:none;">
+        <div style="background:var(--md-surface-variant);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+          <p style="font-size:13px;color:var(--md-on-surface-variant);margin:0;line-height:1.6;font-weight:600;">
+            <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle;color:var(--md-primary);">info</span>
+            You must re-register in-game! Register at Cloudrend SMP in-game using this command:
+          </p>
+          <code style="display:block;margin-top:6px;background:#E8DEF8;border-radius:8px;padding:6px 10px;font-size:12px;color:var(--md-primary);font-family:'JetBrains Mono',monospace;">/register &lt;yourpassword&gt; &lt;yourpassword&gt;</code>
+          <p style="font-size:12px;color:var(--md-on-surface-variant);margin:8px 0 0;line-height:1.6;">
+            If your username is Crafted, you must set a password by typing the command above. You need enter "your password" 2 times of your username or password to Minecraft. Make sure to include this code into this Hub application.
+          </p>
+        </div>
+        <div class="md-field">
+          <span class="material-symbols-rounded field-icon">person</span>
+          <input type="text" id="reg-username" placeholder="Minecraft username" autocomplete="username" />
+        </div>
+        <div class="md-field">
+          <span class="material-symbols-rounded field-icon">lock</span>
+          <input type="password" id="reg-password" placeholder="Password (min. 8 chars)" autocomplete="new-password" />
+        </div>
+        <button class="btn-filled" style="width:100%;justify-content:center;" onclick="handleRegister()">
+          <span class="material-symbols-rounded" style="font-size:18px;">how_to_reg</span>
+          Continue →
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ==============================
+     JAVASCRIPT
+============================== -->
+<script>
+  // ---- State ----
+  let currentUser = null;
+
+  // ---- Toast ----
+  function showToast(msg, icon = 'info', isError = false) {
+    const t = document.getElementById('toast');
+    const m = document.getElementById('toast-msg');
+    const i = document.getElementById('toast-icon');
+    m.textContent = msg;
+    i.textContent = icon;
+    t.className = isError ? 'error show' : 'show';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.className = isError ? 'error' : ''; }, 3500);
+  }
+
+  // ---- Tab switching ----
+  function switchTab(tab) {
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+  }
+
+  // ---- Session helpers ----
+  function saveSession(token, user) {
+    localStorage.setItem('smp_token', token);
+    localStorage.setItem('smp_user', JSON.stringify(user));
+  }
+  function clearSession() {
+    localStorage.removeItem('smp_token');
+    localStorage.removeItem('smp_user');
+  }
+  function getSavedToken() {
+    return localStorage.getItem('smp_token');
+  }
+
+  // ---- Banned overlay ----
+  function showBanned(ban_reason) {
+    document.getElementById('ban-reason-text').textContent =
+      ban_reason || 'No reason provided by staff.';
+    document.getElementById('banned-overlay').classList.add('show');
+    document.getElementById('main-nav').style.display = 'none';
+    document.getElementById('main-content').style.display = 'none';
+    document.getElementById('auth-panel').style.display = 'none';
+  }
+
+  // ---- Show dashboard ----
+  function showDashboard(user) {
+    currentUser = user;
+    document.getElementById('nav-username').textContent = user.username;
+    document.getElementById('dashboard-username').textContent = user.username;
+    document.getElementById('main-nav').style.display = '';
+    document.getElementById('main-content').style.display = '';
+    document.getElementById('auth-panel').style.display = 'none';
+    document.getElementById('loading-screen').style.display = 'none';
+  }
+
+  // ---- Show auth ----
+  function showAuth() {
+    document.getElementById('auth-panel').style.display = 'flex';
+    document.getElementById('main-nav').style.display = 'none';
+    document.getElementById('main-content').style.display = 'none';
+    document.getElementById('loading-screen').style.display = 'none';
+  }
+
+  // ---- Logout ----
+  function logout() {
+    clearSession();
+    currentUser = null;
+    document.getElementById('banned-overlay').classList.remove('show');
+    showAuth();
+    showToast('Logged out.', 'logout');
+  }
+
+  // ---- Verify session via /api/me ----
+  async function verifySession(token) {
+    try {
+      const res = await fetch('/api/me', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        clearSession();
+        return null;
+      }
+
+      if (!res.ok) {
+        // Server error — don't nuke session, but show error
+        showToast('Session check failed. Try refreshing.', 'cloud_off', true);
+        return null;
+      }
+
+      return await res.json();
+    } catch (err) {
+      console.error('[verifySession]', err);
+      showToast('Network error. Check your connection.', 'wifi_off', true);
+      return null;
+    }
+  }
+
+  // ---- Handle user data (ban check + routing) ----
+  function handleUserData(user) {
+    if (!user) { showAuth(); return; }
+
+    if (user.status === 'banned') {
+      // Save session so ban screen persists on reload, but block access
+      showBanned(user.ban_reason);
+      return;
+    }
+
+    showDashboard(user);
+  }
+
+  // ---- Login ----
+  async function handleLogin() {
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    if (!username || !password) {
+      showToast('Fill in all fields.', 'warning', true); return;
+    }
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || 'Login failed.', 'error', true); return;
+      }
+
+      saveSession(data.token, data.user);
+      showToast(`Welcome back, ${data.user.username}!`, 'waving_hand');
+      handleUserData(data.user);
+    } catch (err) {
+      console.error('[login]', err);
+      showToast('Network error.', 'wifi_off', true);
+    }
+  }
+
+  // ---- Register ----
+  async function handleRegister() {
+    const username = document.getElementById('reg-username').value.trim();
+    const password = document.getElementById('reg-password').value;
+
+    if (!username || !password) {
+      showToast('Fill in all fields.', 'warning', true); return;
+    }
+    if (password.length < 8) {
+      showToast('Password must be 8+ chars.', 'lock', true); return;
+    }
+
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (res.status === 409) {
+        showToast('Username already taken.', 'person_off', true); return;
+      }
+      if (!res.ok) {
+        showToast(data.error || 'Registration failed.', 'error', true); return;
+      }
+
+      saveSession(data.token, data.user);
+      showToast(`Welcome, ${data.user.username}! 🎉`, 'celebration');
+      handleUserData(data.user);
+    } catch (err) {
+      console.error('[register]', err);
+      showToast('Network error.', 'wifi_off', true);
+    }
+  }
+
+  // ---- Keyboard shortcuts ----
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const loginVisible = document.getElementById('form-login').style.display !== 'none';
+      const authVisible = document.getElementById('auth-panel').style.display !== 'none';
+      if (authVisible && loginVisible) handleLogin();
+      else if (authVisible) handleRegister();
+    }
+  });
+
+  // ============================
+  // window.onload — session gate
+  // ============================
+  window.onload = async () => {
+    const token = getSavedToken();
+
+    if (!token) {
+      // No local session at all → straight to auth
+      showAuth();
+      return;
+    }
+
+    // Token exists → validate it server-side to prevent spoofing
+    // A locally-crafted token will be rejected if user/id don't match DB
+    const user = await verifySession(token);
+
+    if (!user) {
+      // Token was invalid/expired — wipe it and send to auth
+      clearSession();
+      showAuth();
+      return;
+    }
+
+    // Valid session — route by status
+    handleUserData(user);
+  };
+</script>
+
 </body>
 </html>
