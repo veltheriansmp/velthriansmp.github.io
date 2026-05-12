@@ -3,429 +3,555 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal — Cloudrend SMP</title>
-
+  <title>Cloudrend SMP — Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
-  <!-- Pusher JS SDK -->
   <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-
   <style>
     :root {
-      --md-primary: #6750A4;
-      --md-primary-container: #EADDFF;
-      --md-on-primary-container: #21005D;
-      --md-surface: #FFFBFE;
-      --md-surface-variant: #E7E0EC;
-      --md-on-surface: #1C1B1F;
-      --md-on-surface-variant: #49454F;
-      --md-outline: #79747E;
-      --md-error: #B3261E;
-      --md-error-container: #F9DEDC;
-      --md-on-error-container: #410E0B;
-      --md-shadow: 0 2px 8px rgba(103,80,164,0.10), 0 1px 2px rgba(103,80,164,0.06);
-      --md-shadow-lg: 0 4px 24px rgba(103,80,164,0.13), 0 2px 6px rgba(103,80,164,0.08);
+      --primary: #7C3AED;
+      --primary-light: #EDE9FE;
+      --surface: #F5F3FF;
+      --card: #FFFFFF;
+      --border: #E5E0F5;
+      --text: #1C1B2E;
+      --muted: #6B7280;
+      --error: #DC2626;
+      --error-bg: #FEE2E2;
+      --owner: #F59E0B; --owner-bg: #FEF3C7;
+      --admin: #7C3AED; --admin-bg: #EDE9FE;
+      --mod: #2563EB; --mod-bg: #DBEAFE;
+      --developer: #059669; --developer-bg: #D1FAE5;
+      --builder: #D97706; --builder-bg: #FEF3C7;
+      --member: #6B7280; --member-bg: #F3F4F6;
+      --shadow: 0 2px 8px rgba(124,58,237,0.08);
+      --shadow-lg: 0 8px 32px rgba(124,58,237,0.12);
     }
-    * { box-sizing: border-box; }
-    body { font-family: 'Nunito', sans-serif; background: #F4F0FA; color: var(--md-on-surface); min-height: 100vh; margin: 0; }
-    .material-symbols-rounded { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; }
-    .md-card { background: #fff; border-radius: 16px; box-shadow: var(--md-shadow); overflow: hidden; }
-    .btn-filled { background: var(--md-primary); color: #fff; border: none; border-radius: 100px; padding: 10px 24px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: filter 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-filled:hover { filter: brightness(1.08); }
-    .btn-filled.danger { background: var(--md-error); }
-    .btn-filled.sm { padding: 8px 16px; font-size: 13px; }
-    .btn-outlined { background: transparent; color: var(--md-primary); border: 1.5px solid var(--md-outline); border-radius: 100px; padding: 9px 20px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-outlined:hover { background: rgba(103,80,164,0.06); }
-    .md-field { position: relative; }
-    .md-field input, .md-field textarea { width: 100%; border: 1.5px solid var(--md-outline); border-radius: 10px; padding: 12px 12px 12px 40px; font-family: 'Nunito',sans-serif; font-size: 14px; color: var(--md-on-surface); background: #F8F5FF; outline: none; transition: border-color 0.15s; resize: none; }
-    .md-field input:focus, .md-field textarea:focus { border-color: var(--md-primary); background: #fff; }
-    .md-field .fi { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--md-on-surface-variant); font-size: 18px; pointer-events: none; }
-    .chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 800; }
-    .chip.active { background: #E8F5E9; color: #2E7D32; }
-    .chip.banned { background: var(--md-error-container); color: var(--md-error); }
-    .chip.online { background: #E8F5E9; color: #2E7D32; }
-    .chip.offline { background: #ECEFF1; color: #546E7A; }
-    .chip.web { background: var(--md-primary-container); color: var(--md-primary); }
-    .chip.discord { background: #EDE9FF; color: #5865F2; }
-    .chip.minecraft { background: #E8F5E9; color: #2E7D32; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: var(--surface); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+    .material-symbols-rounded { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; user-select: none; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #D1C4E9; border-radius: 99px; }
+
+    /* Role chips */
+    .role-chip { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: 100px; font-size: 10px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase; }
+    .role-owner   { background: var(--owner-bg);     color: var(--owner); }
+    .role-admin   { background: var(--admin-bg);     color: var(--admin); }
+    .role-mod     { background: var(--mod-bg);       color: var(--mod); }
+    .role-developer { background: var(--developer-bg); color: var(--developer); }
+    .role-builder { background: var(--builder-bg);   color: var(--builder); }
+    .role-member  { background: var(--member-bg);    color: var(--member); }
+
+    /* Avatar */
+    .avatar { border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .avatar-fallback { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; color: #fff; }
+
+    /* Buttons */
+    .btn { border: none; border-radius: 100px; font-family: 'Nunito', sans-serif; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: filter 0.15s; }
+    .btn:hover { filter: brightness(0.94); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-primary { background: var(--primary); color: #fff; padding: 8px 18px; font-size: 13px; }
+    .btn-ghost { background: transparent; color: var(--muted); padding: 6px 10px; font-size: 13px; border-radius: 8px; }
+    .btn-ghost:hover { background: var(--primary-light); color: var(--primary); filter: none; }
+    .btn-danger { background: var(--error-bg); color: var(--error); padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+    .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--primary); padding: 7px 16px; font-size: 13px; border-radius: 100px; }
+
+    /* Input */
+    .input { width: 100%; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 12px; font-family: 'Nunito', sans-serif; font-size: 14px; color: var(--text); background: var(--surface); outline: none; transition: border-color 0.15s; }
+    .input:focus { border-color: var(--primary); background: #fff; }
 
     /* Navbar */
-    nav { background: #fff; border-bottom: 1px solid var(--md-surface-variant); position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(103,80,164,0.07); }
+    #navbar { height: 56px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 12px; flex-shrink: 0; box-shadow: var(--shadow); z-index: 50; }
 
-    /* Loading */
-    #loading-screen { position: fixed; inset: 0; background: var(--md-surface); z-index: 9000; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Layout */
+    #layout { display: flex; flex: 1; overflow: hidden; }
 
-    /* Banned overlay */
-    #banned-overlay { display: none; position: fixed; inset: 0; z-index: 9999; background: var(--md-surface); align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 24px; }
-    #banned-overlay.show { display: flex; }
-    .banned-card { background: var(--md-error-container); border-radius: 28px; padding: 40px 36px 32px; max-width: 480px; width: 100%; box-shadow: 0 8px 40px rgba(179,38,30,0.15); }
+    /* Left sidebar */
+    #sidebar { width: 220px; background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; }
+    #sidebar-players { flex: 1; overflow-y: auto; padding: 8px; }
+    #sidebar-server { padding: 12px; border-top: 1px solid var(--border); background: var(--surface); }
+
+    .player-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 10px; cursor: pointer; transition: background 0.12s; position: relative; }
+    .player-item:hover { background: var(--primary-light); }
+    .player-item .player-name { font-size: 13px; font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .online-dot { width: 8px; height: 8px; border-radius: 50%; background: #22C55E; flex-shrink: 0; }
+
+    /* Main chat area */
+    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    #chat-header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--card); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    #messages { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 2px; }
+    #chat-input-area { padding: 12px 16px; background: var(--card); border-top: 1px solid var(--border); flex-shrink: 0; }
+    .chat-input-wrap { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 8px 12px; transition: border-color 0.15s; }
+    .chat-input-wrap:focus-within { border-color: var(--primary); background: #fff; }
+    .chat-input-wrap input { flex: 1; border: none; background: transparent; font-family: 'Nunito', sans-serif; font-size: 14px; color: var(--text); outline: none; }
+    .send-btn { width: 34px; height: 34px; border-radius: 8px; background: var(--primary); border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: filter 0.15s; }
+    .send-btn:hover { filter: brightness(1.1); }
+
+    /* Message rows */
+    .msg-row { display: flex; gap: 10px; padding: 4px 6px; border-radius: 8px; transition: background 0.1s; }
+    .msg-row:hover { background: rgba(124,58,237,0.04); }
+    .msg-row.continued { padding-top: 1px; }
+    .msg-row.continued .msg-avatar-slot { visibility: hidden; }
+    .msg-avatar-slot { width: 34px; flex-shrink: 0; padding-top: 2px; }
+    .msg-body { flex: 1; min-width: 0; }
+    .msg-header { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
+    .msg-username { font-size: 14px; font-weight: 800; cursor: pointer; }
+    .msg-username:hover { text-decoration: underline; }
+    .msg-time { font-size: 11px; color: var(--muted); }
+    .msg-text { font-size: 14px; line-height: 1.5; color: var(--text); word-break: break-word; }
+    .source-badge { font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 100px; }
+    .source-web { background: var(--primary-light); color: var(--primary); }
+    .source-discord { background: #EEF2FF; color: #5865F2; }
+    .source-minecraft { background: #D1FAE5; color: #059669; }
+
+    /* Profile popover */
+    #profile-popover { display: none; position: fixed; z-index: 200; width: 280px; background: var(--card); border-radius: 16px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden; animation: popIn 0.15s ease; }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .popover-banner { height: 60px; background: linear-gradient(135deg, #7C3AED, #A78BFA); }
+    .popover-body { padding: 0 16px 16px; }
+
+    /* Modal */
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; align-items: center; justify-content: center; }
+    .modal-backdrop.show { display: flex; }
+    .modal { background: var(--card); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); animation: popIn 0.2s ease; }
 
     /* Toast */
-    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #313033; color: #fff; padding: 12px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; z-index: 10000; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1C1B2E; color: #fff; padding: 10px 18px; border-radius: 100px; font-size: 13px; font-weight: 700; z-index: 1000; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); display: flex; align-items: center; gap: 7px; white-space: nowrap; }
     #toast.show { transform: translateX(-50%) translateY(0); }
-    #toast.error { background: var(--md-error); }
+    #toast.err { background: var(--error); }
 
-    /* Chat */
-    #chat-messages { height: 360px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
-    #chat-messages::-webkit-scrollbar { width: 4px; }
-    #chat-messages::-webkit-scrollbar-thumb { background: #d0c8e0; border-radius: 99px; }
+    /* Loading */
+    #loading { position: fixed; inset: 0; background: var(--surface); z-index: 500; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { border-radius: 50%; animation: spin 0.8s linear infinite; }
 
-    .chat-msg { display: flex; flex-direction: column; gap: 2px; }
-    .chat-msg-header { display: flex; align-items: center; gap: 6px; }
-    .chat-msg-username { font-weight: 800; font-size: 13px; }
-    .chat-msg-username.is-staff { color: #E65100; }
-    .chat-msg-time { font-size: 11px; color: var(--md-on-surface-variant); margin-left: auto; }
-    .chat-msg-body { font-size: 14px; line-height: 1.5; color: var(--md-on-surface); padding-left: 2px; }
+    /* Banned overlay */
+    #banned-overlay { display: none; position: fixed; inset: 0; z-index: 999; background: var(--surface); align-items: center; justify-content: center; flex-direction: column; padding: 24px; text-align: center; }
+    #banned-overlay.show { display: flex; }
 
-    /* Sidebar layout */
-    .portal-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
-    @media (max-width: 900px) { .portal-grid { grid-template-columns: 1fr; } }
+    /* Staff panel tab */
+    .tab-btn { padding: 8px 16px; border-radius: 100px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all 0.15s; }
+    .tab-btn.active { background: var(--primary); color: #fff; }
 
-    /* Server status */
-    .stat-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--md-surface-variant); }
-    .stat-row:last-child { border-bottom: none; }
+    /* Select */
+    select.input { cursor: pointer; }
 
-    /* Staff table */
-    .staff-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--md-surface-variant); }
-    .staff-row:last-child { border-bottom: none; }
+    @media (max-width: 700px) {
+      #sidebar { display: none; }
+    }
   </style>
 </head>
 <body>
 
-<!-- BANNED OVERLAY -->
-<div id="banned-overlay" role="alertdialog" aria-modal="true">
-  <div class="banned-card">
-    <div style="width:72px;height:72px;border-radius:50%;background:var(--md-error);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
-      <span class="material-symbols-rounded" style="color:#fff;font-size:36px;">gavel</span>
+<!-- LOADING -->
+<div id="loading">
+  <div class="spinner" style="width:40px;height:40px;border:3px solid var(--primary-light);border-top-color:var(--primary);"></div>
+  <p style="font-weight:700;color:var(--muted);font-size:14px;">Loading portal…</p>
+</div>
+
+<!-- BANNED -->
+<div id="banned-overlay">
+  <div style="max-width:420px;width:100%;background:var(--error-bg);border-radius:24px;padding:36px 28px;">
+    <div style="width:64px;height:64px;border-radius:50%;background:var(--error);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <span class="material-symbols-rounded" style="color:#fff;font-size:32px;">gavel</span>
     </div>
-    <h1 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--md-on-error-container);margin:0 0 6px;">You are banned from the SMP</h1>
-    <p style="color:var(--md-on-error-container);opacity:0.7;font-size:14px;margin:0 0 20px;">Seriously, what did you do. 7.7</p>
-    <div style="background:rgba(179,38,30,0.12);border-radius:12px;padding:10px 14px;margin-bottom:24px;text-align:left;">
-      <p style="font-size:12px;color:var(--md-on-error-container);margin:0;font-weight:600;">Reason: <span id="ban-reason-text">—</span></p>
+    <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#7F1D1D;margin-bottom:6px;">You are banned from the SMP</h2>
+    <p style="color:#991B1B;font-size:13px;margin-bottom:16px;">Seriously, what did you do. 7.7</p>
+    <div style="background:rgba(220,38,38,0.1);border-radius:10px;padding:10px 14px;margin-bottom:20px;text-align:left;">
+      <p style="font-size:12px;color:#7F1D1D;font-weight:700;">Reason: <span id="ban-reason-text">—</span></p>
     </div>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn-outlined" onclick="window.open('https://discord.gg/your-appeal-link','_blank')" style="border-color:var(--md-error);color:var(--md-error);">
-        <span class="material-symbols-rounded" style="font-size:18px;">open_in_new</span>Appeal
-      </button>
-      <button class="btn-filled danger" onclick="logout()">
-        <span class="material-symbols-rounded" style="font-size:18px;">logout</span>Log out
-      </button>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn btn-outline" style="border-color:var(--error);color:var(--error);" onclick="window.open('https://discord.gg/your-server','_blank')">Appeal</button>
+      <button class="btn btn-danger" onclick="logout()" style="padding:8px 20px;">Log out</button>
     </div>
   </div>
-  <div style="position:fixed;bottom:0;left:0;right:0;background:#313033;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;">
-    <span style="color:#fff;font-size:13px;font-weight:600;"><span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle;margin-right:4px;">block</span>You are banned from this Server</span>
-    <span class="chip banned">ACCOUNT STATUS</span>
+  <div style="position:fixed;bottom:0;left:0;right:0;background:#1C1B2E;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;">
+    <span style="color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded" style="font-size:16px;">block</span>You are banned from this server</span>
+    <span class="role-chip" style="background:#7F1D1D;color:#FCA5A5;">BANNED</span>
   </div>
 </div>
 
 <!-- TOAST -->
-<div id="toast">
-  <span class="material-symbols-rounded" id="toast-icon" style="font-size:18px;">info</span>
-  <span id="toast-msg"></span>
-</div>
+<div id="toast"><span class="material-symbols-rounded" id="ti" style="font-size:16px;">info</span><span id="tm"></span></div>
 
-<!-- LOADING -->
-<div id="loading-screen">
-  <div style="width:48px;height:48px;border:3.5px solid var(--md-primary-container);border-top-color:var(--md-primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-  <p style="color:var(--md-on-surface-variant);font-weight:600;font-size:14px;">Loading your portal…</p>
-</div>
-
-<!-- NAVBAR -->
-<nav id="main-nav" style="display:none;">
-  <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
-    <div style="display:flex;align-items:center;gap:16px;">
-      <a href="/" style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--md-primary);text-decoration:none;">Cloudrend SMP</a>
-      <span style="color:var(--md-outline);font-size:18px;">/</span>
-      <span style="font-size:14px;font-weight:700;color:var(--md-on-surface-variant);">Portal</span>
+<!-- PROFILE POPOVER -->
+<div id="profile-popover">
+  <div class="popover-banner" id="pop-banner"></div>
+  <div style="padding:0 16px 4px;display:flex;align-items:flex-end;gap:10px;margin-top:-24px;">
+    <div id="pop-avatar-wrap"></div>
+    <div style="padding-bottom:6px;">
+      <p id="pop-username" style="font-weight:800;font-size:15px;"></p>
+      <span id="pop-role-chip" class="role-chip"></span>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span id="nav-username" style="font-size:14px;font-weight:700;color:var(--md-on-surface-variant);"></span>
-      <span id="nav-staff-badge" style="display:none;background:#FFF3E0;color:#E65100;font-size:11px;font-weight:800;padding:3px 10px;border-radius:100px;">
-        <span class="material-symbols-rounded" style="font-size:13px;vertical-align:middle;">shield</span> STAFF
-      </span>
-      <button class="btn-outlined" onclick="logout()" style="padding:7px 16px;font-size:13px;">
-        <span class="material-symbols-rounded" style="font-size:16px;">logout</span>Logout
+  </div>
+  <div class="popover-body">
+    <p id="pop-bio" style="font-size:13px;color:var(--muted);margin:8px 0 12px;min-height:18px;"></p>
+    <div id="pop-staff-actions" style="display:none;border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:6px;">
+      <p style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">Staff Actions</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;" onclick="popSetRole()">
+          <span class="material-symbols-rounded" style="font-size:14px;">manage_accounts</span>Set Role
+        </button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;" onclick="popBan()">
+          <span class="material-symbols-rounded" style="font-size:14px;">block</span>Ban
+        </button>
+        <button class="btn btn-danger" style="font-size:12px;" onclick="popDelete()">
+          <span class="material-symbols-rounded" style="font-size:14px;">delete</span>Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal-backdrop" id="edit-modal">
+  <div class="modal">
+    <h3 style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;">Edit Profile</h3>
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;font-weight:800;color:var(--muted);display:block;margin-bottom:6px;">AVATAR URL</label>
+      <input class="input" id="edit-avatar" placeholder="https://i.imgur.com/..." />
+      <p style="font-size:11px;color:var(--muted);margin-top:4px;">Paste an image URL (imgur, discord CDN, etc.)</p>
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="font-size:12px;font-weight:800;color:var(--muted);display:block;margin-bottom:6px;">BIO <span style="font-weight:400;">(max 100 chars)</span></label>
+      <input class="input" id="edit-bio" placeholder="Say something about yourself…" maxlength="100" />
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProfile()">
+        <span class="material-symbols-rounded" style="font-size:16px;">save</span>Save
       </button>
     </div>
   </div>
-</nav>
+</div>
 
-<!-- MAIN PORTAL GRID -->
-<div id="portal-content" style="display:none;">
-  <div class="portal-grid">
-
-    <!-- LEFT COLUMN -->
-    <div style="display:flex;flex-direction:column;gap:20px;">
-
-      <!-- Welcome card -->
-      <div class="md-card" style="padding:24px;background:linear-gradient(135deg,#EDE7F6,#D1C4E9);border-radius:20px;">
-        <div style="display:flex;align-items:center;gap:14px;">
-          <div style="width:52px;height:52px;border-radius:50%;background:var(--md-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <span class="material-symbols-rounded" style="color:#fff;font-size:26px;">person</span>
-          </div>
-          <div style="flex:1;">
-            <h2 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin:0;color:#21005D;">Hey, <span id="welcome-username">—</span>!</h2>
-            <p style="margin:0;font-size:13px;color:#4527A0;font-weight:600;">Welcome back to the Cloudrend SMP portal</p>
-          </div>
-          <span class="chip active" id="portal-status">active</span>
-        </div>
-      </div>
-
-      <!-- Global Chat -->
-      <div class="md-card" style="border-radius:20px;">
-        <div style="padding:16px 20px;border-bottom:1px solid var(--md-surface-variant);display:flex;align-items:center;gap:10px;">
-          <span class="material-symbols-rounded" style="color:var(--md-primary);">forum</span>
-          <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin:0;">Global Chat</h3>
-          <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
-            <span class="chip web" style="font-size:10px;">Web</span>
-            <span class="chip discord" style="font-size:10px;">Discord</span>
-            <span class="chip minecraft" style="font-size:10px;">MC</span>
-          </div>
-        </div>
-
-        <!-- Messages -->
-        <div id="chat-messages">
-          <div id="chat-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--md-on-surface-variant);gap:8px;">
-            <span class="material-symbols-rounded" style="font-size:36px;opacity:0.3;">chat_bubble</span>
-            <p style="font-size:13px;font-weight:600;margin:0;">Loading messages…</p>
-          </div>
-        </div>
-
-        <!-- Input -->
-        <div style="padding:12px 16px;border-top:1px solid var(--md-surface-variant);display:flex;gap:8px;align-items:flex-end;">
-          <div class="md-field" style="flex:1;">
-            <span class="material-symbols-rounded fi">chat</span>
-            <input type="text" id="chat-input" placeholder="Say something…" maxlength="500"
-              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}" />
-          </div>
-          <button class="btn-filled sm" onclick="sendMessage()" style="flex-shrink:0;padding:12px 16px;">
-            <span class="material-symbols-rounded" style="font-size:18px;">send</span>
-          </button>
-        </div>
-        <div style="padding:4px 16px 10px;display:flex;justify-content:flex-end;">
-          <span id="chat-char-count" style="font-size:11px;color:var(--md-on-surface-variant);font-weight:600;">0 / 500</span>
-        </div>
-      </div>
-
-      <!-- Staff Panel (staff only) -->
-      <div id="staff-panel" style="display:none;">
-        <div class="md-card" style="border-radius:20px;">
-          <div style="padding:16px 20px;border-bottom:1px solid var(--md-surface-variant);display:flex;align-items:center;gap:10px;">
-            <span class="material-symbols-rounded" style="color:#E65100;">admin_panel_settings</span>
-            <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin:0;">Staff Panel</h3>
-            <button class="btn-outlined" onclick="loadUsers()" style="margin-left:auto;padding:6px 14px;font-size:12px;">
-              <span class="material-symbols-rounded" style="font-size:14px;">refresh</span>Refresh
-            </button>
-          </div>
-
-          <!-- Quick ban -->
-          <div style="padding:16px 20px;border-bottom:1px solid var(--md-surface-variant);background:#FFF8F0;">
-            <p style="font-size:12px;font-weight:800;color:#E65100;margin:0 0 10px;display:flex;align-items:center;gap:4px;">
-              <span class="material-symbols-rounded" style="font-size:16px;">gavel</span>Quick Ban
-            </p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <div class="md-field" style="flex:1;min-width:120px;">
-                <span class="material-symbols-rounded fi">person</span>
-                <input type="text" id="ban-username-input" placeholder="Username" />
-              </div>
-              <div class="md-field" style="flex:2;min-width:160px;">
-                <span class="material-symbols-rounded fi">edit_note</span>
-                <input type="text" id="ban-reason-input" placeholder="Reason (optional)" />
-              </div>
-              <button class="btn-filled danger sm" onclick="adminBan()" style="align-self:flex-end;padding:11px 16px;">
-                <span class="material-symbols-rounded" style="font-size:16px;">block</span>Ban
-              </button>
-            </div>
-          </div>
-
-          <!-- User table -->
-          <div id="user-table-body" style="min-height:60px;">
-            <div style="padding:24px;text-align:center;color:var(--md-on-surface-variant);font-size:13px;font-weight:600;">
-              <span class="material-symbols-rounded" style="font-size:28px;display:block;margin-bottom:6px;opacity:0.3;">group</span>
-              Click Refresh to load players
-            </div>
-          </div>
-          <div style="padding:10px 16px;border-top:1px solid var(--md-surface-variant);">
-            <span id="user-count" style="font-size:12px;color:var(--md-on-surface-variant);font-weight:600;"></span>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /left column -->
-
-    <!-- RIGHT COLUMN -->
-    <div style="display:flex;flex-direction:column;gap:20px;">
-
-      <!-- Server Status -->
-      <div class="md-card" style="border-radius:20px;">
-        <div style="padding:16px 20px;border-bottom:1px solid var(--md-surface-variant);display:flex;align-items:center;gap:10px;">
-          <span class="material-symbols-rounded" style="color:var(--md-primary);">dns</span>
-          <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin:0;">Server Status</h3>
-          <button onclick="loadServerStatus()" title="Refresh" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--md-on-surface-variant);padding:4px;border-radius:8px;">
-            <span class="material-symbols-rounded" style="font-size:18px;">refresh</span>
-          </button>
-        </div>
-        <div style="padding:16px 20px;" id="server-status-body">
-          <div style="text-align:center;padding:16px;color:var(--md-on-surface-variant);font-size:13px;font-weight:600;">
-            <div style="width:24px;height:24px;border:3px solid var(--md-primary-container);border-top-color:var(--md-primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 8px;"></div>
-            Pinging server…
-          </div>
-        </div>
-        <div style="padding:0 20px 16px;">
-          <div style="background:#F8F5FF;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;">
-            <span class="material-symbols-rounded" style="font-size:16px;color:var(--md-primary);">content_copy</span>
-            <code id="server-ip" style="font-size:13px;font-weight:700;color:var(--md-primary);font-family:'JetBrains Mono',monospace;flex:1;">cloudrend.playwithbao.com</code>
-            <button onclick="copyIP()" style="background:none;border:none;cursor:pointer;color:var(--md-primary);padding:2px;">
-              <span class="material-symbols-rounded" style="font-size:16px;">copy_all</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Online Players -->
-      <div class="md-card" style="border-radius:20px;">
-        <div style="padding:16px 20px;border-bottom:1px solid var(--md-surface-variant);display:flex;align-items:center;gap:10px;">
-          <span class="material-symbols-rounded" style="color:#2E7D32;">people</span>
-          <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin:0;">Online Players</h3>
-          <span id="online-count-badge" style="margin-left:auto;background:var(--md-primary-container);color:var(--md-primary);font-size:12px;font-weight:800;padding:2px 10px;border-radius:100px;">—</span>
-        </div>
-        <div id="online-players-list" style="padding:12px 16px;min-height:48px;font-size:13px;color:var(--md-on-surface-variant);font-weight:600;display:flex;flex-wrap:wrap;gap:6px;">
-          <span style="opacity:0.5;">Loading…</span>
-        </div>
-      </div>
-
-      <!-- Quick links -->
-      <div class="md-card" style="padding:16px 20px;border-radius:20px;">
-        <h3 style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;margin:0 0 12px;">Quick Links</h3>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <a href="https://discord.gg/your-server" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#F0EDFF;text-decoration:none;color:#5865F2;font-weight:700;font-size:13px;transition:filter 0.15s;" onmouseover="this.style.filter='brightness(0.95)'" onmouseout="this.style.filter=''">
-            <span class="material-symbols-rounded" style="font-size:20px;">tag</span>Discord Server
-          </a>
-          <a href="https://cloudrend.playwithbao.com" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#F8F5FF;text-decoration:none;color:var(--md-primary);font-weight:700;font-size:13px;transition:filter 0.15s;" onmouseover="this.style.filter='brightness(0.95)'" onmouseout="this.style.filter=''">
-            <span class="material-symbols-rounded" style="font-size:20px;">language</span>Server Website
-          </a>
-        </div>
-      </div>
-
-    </div><!-- /right column -->
+<!-- SET ROLE MODAL -->
+<div class="modal-backdrop" id="role-modal">
+  <div class="modal">
+    <h3 style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:6px;">Set Role</h3>
+    <p id="role-modal-target" style="font-size:13px;color:var(--muted);margin-bottom:20px;"></p>
+    <select class="input" id="role-select" style="margin-bottom:20px;">
+      <option value="member">member</option>
+      <option value="builder">builder</option>
+      <option value="developer">developer</option>
+      <option value="mod">mod</option>
+      <option value="admin">admin</option>
+    </select>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="document.getElementById('role-modal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmSetRole()">Confirm</button>
+    </div>
   </div>
 </div>
 
+<!-- NAVBAR -->
+<div id="navbar" style="display:none;">
+  <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--primary);">Cloudrend SMP</span>
+  <div style="flex:1;"></div>
+  <!-- Nav tabs -->
+  <div style="display:flex;gap:4px;background:var(--surface);border-radius:100px;padding:3px;">
+    <button class="tab-btn active" id="tab-chat" onclick="switchTab('chat')">
+      <span class="material-symbols-rounded" style="font-size:15px;">forum</span> Chat
+    </button>
+    <button class="tab-btn" id="tab-staff" onclick="switchTab('staff')" style="display:none;" id="tab-staff">
+      <span class="material-symbols-rounded" style="font-size:15px;">admin_panel_settings</span> Staff
+    </button>
+  </div>
+  <div style="flex:1;"></div>
+  <!-- User info -->
+  <div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="openEditModal()">
+    <div id="nav-avatar-wrap"></div>
+    <div style="line-height:1.2;">
+      <p id="nav-username" style="font-size:13px;font-weight:800;"></p>
+      <span id="nav-role-chip" class="role-chip"></span>
+    </div>
+    <span class="material-symbols-rounded" style="font-size:16px;color:var(--muted);">edit</span>
+  </div>
+  <button class="btn btn-ghost" onclick="logout()" style="margin-left:8px;">
+    <span class="material-symbols-rounded" style="font-size:18px;">logout</span>
+  </button>
+</div>
+
+<!-- LAYOUT -->
+<div id="layout" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div style="padding:12px 12px 6px;display:flex;align-items:center;justify-content:space-between;">
+      <p style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Online Players</p>
+      <span id="online-count" style="font-size:11px;font-weight:800;color:var(--primary);"></span>
+    </div>
+    <div id="sidebar-players"></div>
+    <!-- Server status -->
+    <div id="sidebar-server">
+      <p style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Server Status</p>
+      <div id="server-status-mini">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <span style="font-size:12px;font-weight:700;">Status</span>
+          <span id="ss-status" class="role-chip" style="font-size:10px;"></span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <span style="font-size:12px;font-weight:700;">Players</span>
+          <span id="ss-players" style="font-size:12px;font-weight:800;color:var(--primary);">—</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:12px;font-weight:700;">Version</span>
+          <span id="ss-version" style="font-size:11px;color:var(--muted);font-weight:700;">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- CHAT PANEL -->
+    <div id="panel-chat" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+      <div id="chat-header">
+        <span class="material-symbols-rounded" style="color:var(--primary);font-size:20px;">forum</span>
+        <span style="font-weight:800;font-size:15px;">Global Chat</span>
+        <div style="margin-left:auto;display:flex;gap:4px;">
+          <span class="source-badge source-web">Web</span>
+          <span class="source-badge source-discord">Discord</span>
+          <span class="source-badge source-minecraft">MC</span>
+        </div>
+      </div>
+      <div id="messages">
+        <div id="chat-loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px;padding:40px;color:var(--muted);">
+          <div class="spinner" style="width:28px;height:28px;border:3px solid var(--primary-light);border-top-color:var(--primary);"></div>
+          <p style="font-size:13px;font-weight:600;">Loading messages…</p>
+        </div>
+      </div>
+      <div id="chat-input-area">
+        <div class="chat-input-wrap">
+          <span class="material-symbols-rounded" style="color:var(--muted);font-size:18px;">add_circle</span>
+          <input type="text" id="chat-input" placeholder="Message…" maxlength="500"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}" />
+          <span id="chat-char" style="font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap;">0/500</span>
+          <button class="send-btn" onclick="sendMessage()">
+            <span class="material-symbols-rounded" style="font-size:18px;">send</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAFF PANEL -->
+    <div id="panel-staff" style="display:none;flex:1;overflow-y:auto;padding:24px;">
+      <div style="max-width:800px;margin:0 auto;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+          <div style="width:40px;height:40px;border-radius:12px;background:#FEF3C7;display:flex;align-items:center;justify-content:center;">
+            <span class="material-symbols-rounded" style="color:#D97706;">admin_panel_settings</span>
+          </div>
+          <div>
+            <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;">Staff Panel</h2>
+            <p style="font-size:12px;color:var(--muted);font-weight:600;">Manage players</p>
+          </div>
+          <button class="btn btn-outline" onclick="loadUsers()" style="margin-left:auto;">
+            <span class="material-symbols-rounded" style="font-size:16px;">refresh</span>Refresh
+          </button>
+        </div>
+
+        <!-- Quick ban -->
+        <div style="background:var(--error-bg);border-radius:14px;padding:16px 18px;margin-bottom:20px;">
+          <p style="font-size:12px;font-weight:800;color:var(--error);margin-bottom:10px;display:flex;align-items:center;gap:4px;">
+            <span class="material-symbols-rounded" style="font-size:16px;">gavel</span>Quick Ban
+          </p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <input class="input" id="ban-u" placeholder="Username" style="flex:1;min-width:120px;" />
+            <input class="input" id="ban-r" placeholder="Reason (optional)" style="flex:2;min-width:180px;" />
+            <button class="btn btn-danger" onclick="adminBan()" style="padding:10px 16px;border-radius:10px;font-size:13px;">
+              <span class="material-symbols-rounded" style="font-size:16px;">block</span>Ban
+            </button>
+          </div>
+        </div>
+
+        <!-- User table -->
+        <div style="background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--border);">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <p style="font-weight:800;font-size:14px;">All Players</p>
+            <span id="user-count" style="font-size:12px;color:var(--muted);font-weight:700;"></span>
+          </div>
+          <div id="user-table"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
 <script>
-  // ---- Config ----
-  // Set your Pusher key + cluster here (public-safe, no secret)
-  const PUSHER_KEY = '280cbae97b79cb1421b2';
+  // ============================
+  // CONFIG
+  // ============================
+  const PUSHER_KEY = 'YOUR_PUSHER_KEY';
   const PUSHER_CLUSTER = 'ap1';
   const SERVER_HOST = 'cloudrend.playwithbao.com';
-  const STAFF = ['neurotic_orchid'];
+  const ROLE_HIERARCHY = ['member','builder','developer','mod','admin','owner'];
+  const STAFF_ROLES = ['mod','admin','owner'];
 
-  // ---- State ----
-  let currentUser = null;
-  let pusherChannel = null;
+  // ============================
+  // STATE
+  // ============================
+  let ME = null;
+  let popoverTarget = null;
 
-  // ---- Helpers ----
-  function isStaff(u) { return STAFF.some(s => s.toLowerCase() === u?.toLowerCase()); }
+  // ============================
+  // UTILS
+  // ============================
+  function roleRank(r) { return ROLE_HIERARCHY.indexOf(r) ?? 0; }
+  function isStaff(r) { return STAFF_ROLES.includes(r); }
   function getSavedToken() { return localStorage.getItem('smp_token'); }
   function clearSession() { localStorage.removeItem('smp_token'); localStorage.removeItem('smp_user'); }
+  function authHeader() { return { 'Authorization': `Bearer ${getSavedToken()}`, 'Content-Type': 'application/json' }; }
 
-  function showToast(msg, icon = 'info', isError = false) {
+  function showToast(msg, icon = 'info', err = false) {
     const t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    document.getElementById('toast-icon').textContent = icon;
-    t.className = isError ? 'error show' : 'show';
+    document.getElementById('tm').textContent = msg;
+    document.getElementById('ti').textContent = icon;
+    t.className = err ? 'err show' : 'show';
     clearTimeout(t._t);
-    t._t = setTimeout(() => { t.className = isError ? 'error' : ''; }, 3200);
+    t._t = setTimeout(() => t.className = err ? 'err' : '', 3000);
   }
 
-  function logout() {
-    clearSession();
-    window.location.href = '/';
+  function logout() { clearSession(); window.location.href = '/'; }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  function copyIP() {
-    navigator.clipboard.writeText(SERVER_HOST);
-    showToast('Server IP copied!', 'content_copy');
+  // Avatar helpers
+  function avatarColor(username) {
+    const colors = ['#7C3AED','#2563EB','#059669','#D97706','#DC2626','#7C3AED','#0891B2'];
+    let h = 0; for (const c of username) h = (h * 31 + c.charCodeAt(0)) % colors.length;
+    return colors[h];
   }
 
-  // ---- Session verification ----
-  async function verifySession(token) {
-    const res = await fetch('/api/me', { headers: { 'Authorization': `Bearer ${token}` } });
-    if (res.status === 401 || res.status === 403) { clearSession(); return null; }
-    if (!res.ok) return null;
-    return res.json();
-  }
-
-  // ---- Banned overlay ----
-  function showBanned(reason) {
-    document.getElementById('ban-reason-text').textContent = reason || 'No reason provided.';
-    document.getElementById('banned-overlay').classList.add('show');
-    document.getElementById('portal-content').style.display = 'none';
-    document.getElementById('main-nav').style.display = 'none';
-    document.getElementById('loading-screen').style.display = 'none';
-  }
-
-  // ---- Render portal ----
-  function showPortal(user) {
-    currentUser = user;
-    document.getElementById('welcome-username').textContent = user.username;
-    document.getElementById('nav-username').textContent = user.username;
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('main-nav').style.display = '';
-    document.getElementById('portal-content').style.display = '';
-    if (isStaff(user.username)) {
-      document.getElementById('staff-panel').style.display = '';
-      document.getElementById('nav-staff-badge').style.display = 'inline-flex';
-      loadUsers();
+  function makeAvatar(username, avatar_url, size = 34) {
+    if (avatar_url) {
+      return `<img src="${escHtml(avatar_url)}" class="avatar" width="${size}" height="${size}" onerror="this.replaceWith(makeAvatarEl('${escHtml(username)}',${size}))" />`;
     }
+    return `<div class="avatar-fallback" style="width:${size}px;height:${size}px;font-size:${Math.round(size*0.4)}px;background:${avatarColor(username)};">${username[0].toUpperCase()}</div>`;
+  }
+
+  function makeAvatarEl(username, size) {
+    const d = document.createElement('div');
+    d.className = 'avatar-fallback';
+    Object.assign(d.style, { width: size+'px', height: size+'px', fontSize: Math.round(size*0.4)+'px', background: avatarColor(username) });
+    d.textContent = username[0].toUpperCase();
+    return d;
+  }
+
+  function setAvatarWrap(wrapId, username, avatar_url, size) {
+    const el = document.getElementById(wrapId);
+    if (!el) return;
+    el.innerHTML = makeAvatar(username, avatar_url, size);
+  }
+
+  // ============================
+  // TAB SWITCHING
+  // ============================
+  function switchTab(tab) {
+    document.getElementById('panel-chat').style.display = tab === 'chat' ? 'flex' : 'none';
+    document.getElementById('panel-staff').style.display = tab === 'staff' ? 'flex' : 'none';
+    document.getElementById('tab-chat').classList.toggle('active', tab === 'chat');
+    document.getElementById('tab-staff').classList.toggle('active', tab === 'staff');
+    if (tab === 'staff') loadUsers();
+  }
+
+  // ============================
+  // BOOT / SESSION
+  // ============================
+  async function verifySession(token) {
+    try {
+      const res = await fetch('/api/me', { headers: { 'Authorization': `Bearer ${token}` } });
+      if (!res.ok) return null;
+      return res.json();
+    } catch { return null; }
+  }
+
+  function showPortal(user) {
+    ME = user;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('navbar').style.display = '';
+    document.getElementById('layout').style.display = '';
+
+    // Nav avatar + name
+    document.getElementById('nav-username').textContent = user.username;
+    const chip = document.getElementById('nav-role-chip');
+    chip.textContent = user.role ?? 'member';
+    chip.className = `role-chip role-${user.role ?? 'member'}`;
+    setAvatarWrap('nav-avatar-wrap', user.username, user.avatar_url, 32);
+
+    // Staff tab
+    if (isStaff(user.role)) {
+      document.getElementById('tab-staff').style.display = '';
+    }
+
     initChat();
     loadServerStatus();
+    loadOnlinePlayers();
   }
+
+  window.onload = async () => {
+    const token = getSavedToken();
+    if (!token) { window.location.href = '/'; return; }
+    const user = await verifySession(token);
+    if (!user) { window.location.href = '/'; return; }
+    if (user.status === 'banned') {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('ban-reason-text').textContent = user.ban_reason || 'No reason provided.';
+      document.getElementById('banned-overlay').classList.add('show');
+      return;
+    }
+    showPortal(user);
+  };
 
   // ============================
   // CHAT
   // ============================
-  function authHeader() {
-    return { 'Authorization': `Bearer ${getSavedToken()}`, 'Content-Type': 'application/json' };
-  }
-
-  function sourceIcon(source) {
-    if (source === 'discord') return '<span class="material-symbols-rounded" style="font-size:14px;color:#5865F2;">tag</span>';
-    if (source === 'minecraft') return '<span class="material-symbols-rounded" style="font-size:14px;color:#2E7D32;">sports_esports</span>';
-    return '<span class="material-symbols-rounded" style="font-size:14px;color:var(--md-primary);">language</span>';
-  }
+  let lastMsgUser = null;
+  let lastMsgTime = null;
 
   function formatTime(iso) {
-    const d = new Date(iso);
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
-  function appendMessage(msg, prepend = false) {
-    const empty = document.getElementById('chat-empty');
-    if (empty) empty.remove();
+  function renderMessage(msg, prepend = false) {
+    const box = document.getElementById('messages');
+    const loading = document.getElementById('chat-loading');
+    if (loading) loading.remove();
 
-    const box = document.getElementById('chat-messages');
-    const el = document.createElement('div');
-    el.className = 'chat-msg';
-    el.dataset.id = msg.id;
-    el.innerHTML = `
-      <div class="chat-msg-header">
-        ${sourceIcon(msg.source)}
-        <span class="chat-msg-username ${isStaff(msg.username) ? 'is-staff' : ''}">${msg.username}</span>
-        ${isStaff(msg.username) ? '<span style="font-size:10px;color:#E65100;font-weight:800;">STAFF</span>' : ''}
-        <span class="chip ${msg.source}" style="font-size:10px;padding:1px 7px;">${msg.source}</span>
-        <span class="chat-msg-time">${formatTime(msg.created_at)}</span>
+    const timeDiff = lastMsgTime ? (new Date(msg.created_at) - new Date(lastMsgTime)) / 1000 : 999;
+    const continued = !prepend && msg.username === lastMsgUser && timeDiff < 300;
+
+    const row = document.createElement('div');
+    row.className = `msg-row${continued ? ' continued' : ''}`;
+    row.dataset.username = msg.username;
+
+    row.innerHTML = `
+      <div class="msg-avatar-slot">
+        ${!continued ? makeAvatar(msg.username, msg.avatar_url, 34) : ''}
       </div>
-      <div class="chat-msg-body">${escapeHtml(msg.content)}</div>
-    `;
-    if (prepend) box.prepend(el);
-    else box.appendChild(el);
-  }
+      <div class="msg-body">
+        ${!continued ? `
+          <div class="msg-header">
+            <span class="msg-username" style="color:${avatarColor(msg.username)};" onclick="openProfile(event,'${escHtml(msg.username)}')">${escHtml(msg.username)}</span>
+            <span class="source-badge source-${msg.source}">${msg.source}</span>
+            <span class="msg-time">${formatTime(msg.created_at)}</span>
+          </div>` : ''}
+        <p class="msg-text">${escHtml(msg.content)}</p>
+      </div>`;
 
-  function escapeHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    if (prepend) {
+      box.prepend(row);
+    } else {
+      box.appendChild(row);
+      lastMsgUser = msg.username;
+      lastMsgTime = msg.created_at;
+    }
   }
 
   async function loadMessages() {
@@ -433,15 +559,18 @@
       const res = await fetch('/api/chat', { headers: authHeader() });
       if (!res.ok) return;
       const { messages } = await res.json();
-      const box = document.getElementById('chat-messages');
+      const box = document.getElementById('messages');
       box.innerHTML = '';
       if (messages.length === 0) {
-        box.innerHTML = `<div id="chat-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--md-on-surface-variant);gap:8px;"><span class="material-symbols-rounded" style="font-size:36px;opacity:0.3;">chat_bubble</span><p style="font-size:13px;font-weight:600;margin:0;">No messages yet. Say hi!</p></div>`;
+        box.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px;gap:8px;color:var(--muted);">
+          <span class="material-symbols-rounded" style="font-size:40px;opacity:0.3;">chat_bubble</span>
+          <p style="font-size:13px;font-weight:700;">No messages yet — say hi!</p></div>`;
         return;
       }
-      messages.forEach(m => appendMessage(m));
+      lastMsgUser = null; lastMsgTime = null;
+      messages.forEach(m => renderMessage(m));
       box.scrollTop = box.scrollHeight;
-    } catch (err) { console.error('[chat load]', err); }
+    } catch (err) { console.error('[chat]', err); showToast('Failed to load messages.', 'wifi_off', true); }
   }
 
   async function sendMessage() {
@@ -449,191 +578,253 @@
     const content = input.value.trim();
     if (!content) return;
     input.value = '';
-    document.getElementById('chat-char-count').textContent = '0 / 500';
+    document.getElementById('chat-char').textContent = '0/500';
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: authHeader(),
-        body: JSON.stringify({ content }),
-      });
-      if (!res.ok) {
-        const d = await res.json();
-        showToast(d.error || 'Failed to send.', 'error', true);
-      }
-      // Message will arrive via Pusher broadcast — no need to append manually
-    } catch (err) {
-      showToast('Network error.', 'wifi_off', true);
-    }
+      const res = await fetch('/api/chat', { method: 'POST', headers: authHeader(), body: JSON.stringify({ content }) });
+      if (!res.ok) { const d = await res.json(); showToast(d.error || 'Failed to send.', 'error', true); }
+    } catch { showToast('Network error.', 'wifi_off', true); }
   }
 
   function initChat() {
-    // Char counter
     document.getElementById('chat-input').addEventListener('input', function() {
-      document.getElementById('chat-char-count').textContent = `${this.value.length} / 500`;
+      document.getElementById('chat-char').textContent = `${this.value.length}/500`;
     });
-
     loadMessages();
 
-    // Pusher real-time subscription
-    const pusherClient = new Pusher(280cbae97b79cb1421b2, { cluster: ap1 });
-    pusherChannel = pusherClient.subscribe('smp-chat');
-    pusherChannel.bind('new-message', (msg) => {
-      const box = document.getElementById('chat-messages');
-      const wasAtBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
-      appendMessage(msg);
-      if (wasAtBottom) box.scrollTop = box.scrollHeight;
-    });
+    // Pusher
+    try {
+      const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER });
+      const ch = pusher.subscribe('smp-chat');
+      ch.bind('new-message', (msg) => {
+        const box = document.getElementById('messages');
+        const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+        renderMessage(msg);
+        if (atBottom) box.scrollTop = box.scrollHeight;
+      });
+    } catch (e) { console.warn('[pusher]', e); }
   }
 
   // ============================
   // SERVER STATUS
-  // mcsrvstat.us free API — no key needed
   // ============================
   async function loadServerStatus() {
-    const body = document.getElementById('server-status-body');
-    const playersList = document.getElementById('online-players-list');
-    const countBadge = document.getElementById('online-count-badge');
-
-    body.innerHTML = `<div style="text-align:center;padding:12px;color:var(--md-on-surface-variant);font-size:13px;font-weight:600;"><div style="width:22px;height:22px;border:3px solid var(--md-primary-container);border-top-color:var(--md-primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 8px;"></div>Pinging…</div>`;
-
     try {
       const res = await fetch(`https://api.mcsrvstat.us/3/${SERVER_HOST}`);
-      const data = await res.json();
-
-      if (!data.online) {
-        body.innerHTML = `
-          <div class="stat-row"><span style="font-size:13px;font-weight:700;color:var(--md-on-surface-variant);">Status</span><span class="chip offline">Offline</span></div>
-          <p style="font-size:12px;color:var(--md-on-surface-variant);margin:8px 0 0;font-weight:600;">Server is currently offline or unreachable.</p>`;
-        countBadge.textContent = '0';
-        playersList.innerHTML = '<span style="opacity:0.5;font-size:13px;">Server offline</span>';
-        return;
-      }
-
-      const motd = data.motd?.clean?.join(' ') ?? 'Cloudrend SMP';
-      const online = data.players?.online ?? 0;
-      const max = data.players?.max ?? '?';
-      const version = data.version ?? '?';
-      const players = data.players?.list ?? [];
-
-      body.innerHTML = `
-        <div class="stat-row">
-          <span style="font-size:13px;font-weight:700;">Status</span>
-          <span class="chip online">Online</span>
-        </div>
-        <div class="stat-row">
-          <span style="font-size:13px;font-weight:700;">Players</span>
-          <span style="font-size:13px;font-weight:800;color:var(--md-primary);">${online} / ${max}</span>
-        </div>
-        <div class="stat-row">
-          <span style="font-size:13px;font-weight:700;">Version</span>
-          <span style="font-size:13px;font-weight:700;color:var(--md-on-surface-variant);">${escapeHtml(version)}</span>
-        </div>
-        <div class="stat-row" style="border-bottom:none;">
-          <span style="font-size:13px;font-weight:700;">MOTD</span>
-          <span style="font-size:12px;font-weight:600;color:var(--md-on-surface-variant);max-width:160px;text-align:right;">${escapeHtml(motd)}</span>
-        </div>`;
-
-      countBadge.textContent = `${online} / ${max}`;
-
-      if (players.length === 0) {
-        playersList.innerHTML = `<span style="font-size:13px;color:var(--md-on-surface-variant);opacity:0.6;">${online === 0 ? 'No players online' : 'Player list hidden by server'}</span>`;
+      const d = await res.json();
+      const statusEl = document.getElementById('ss-status');
+      if (d.online) {
+        statusEl.textContent = 'Online';
+        statusEl.className = 'role-chip role-developer';
+        document.getElementById('ss-players').textContent = `${d.players?.online ?? 0} / ${d.players?.max ?? '?'}`;
+        document.getElementById('ss-version').textContent = d.version ?? '?';
       } else {
-        playersList.innerHTML = players.map(p =>
-          `<span style="background:var(--md-primary-container);color:var(--md-on-primary-container);padding:3px 10px;border-radius:100px;font-size:12px;font-weight:700;">${escapeHtml(p.name ?? p)}</span>`
-        ).join('');
+        statusEl.textContent = 'Offline';
+        statusEl.className = 'role-chip role-member';
+        document.getElementById('ss-players').textContent = '0';
       }
-
-    } catch (err) {
-      body.innerHTML = `<p style="font-size:13px;color:var(--md-error);font-weight:600;margin:0;">Failed to fetch status.</p>`;
-      console.error('[server status]', err);
-    }
-
-    // Auto-refresh every 60s
+    } catch { document.getElementById('ss-status').textContent = 'Error'; }
     setTimeout(loadServerStatus, 60_000);
   }
 
   // ============================
-  // STAFF / ADMIN
+  // ONLINE PLAYERS SIDEBAR
+  // ============================
+  async function loadOnlinePlayers() {
+    try {
+      const res = await fetch(`https://api.mcsrvstat.us/3/${SERVER_HOST}`);
+      const d = await res.json();
+      const sidebar = document.getElementById('sidebar-players');
+      const count = document.getElementById('online-count');
+      const players = d.players?.list ?? [];
+      count.textContent = `${d.players?.online ?? 0}/${d.players?.max ?? '?'}`;
+
+      if (!d.online || players.length === 0) {
+        sidebar.innerHTML = `<div style="padding:12px;text-align:center;color:var(--muted);font-size:12px;font-weight:600;">
+          ${!d.online ? 'Server offline' : 'Player list hidden'}</div>`;
+        return;
+      }
+
+      sidebar.innerHTML = players.map(p => {
+        const name = p.name ?? p;
+        return `<div class="player-item" onclick="openProfile(event,'${escHtml(name)}')">
+          ${makeAvatar(name, null, 28)}
+          <span class="player-name">${escHtml(name)}</span>
+          <div class="online-dot"></div>
+        </div>`;
+      }).join('');
+    } catch { }
+    setTimeout(loadOnlinePlayers, 60_000);
+  }
+
+  // ============================
+  // PROFILE POPOVER
+  // ============================
+  function openProfile(e, username) {
+    e.stopPropagation();
+    popoverTarget = username;
+    const pop = document.getElementById('profile-popover');
+
+    // Position near click
+    const x = Math.min(e.clientX + 10, window.innerWidth - 300);
+    const y = Math.min(e.clientY + 10, window.innerHeight - 320);
+    pop.style.left = x + 'px';
+    pop.style.top = y + 'px';
+    pop.style.display = 'block';
+
+    // Fetch profile
+    fetch(`/api/profile?username=${encodeURIComponent(username)}`, { headers: authHeader() })
+      .then(r => r.json())
+      .then(u => {
+        document.getElementById('pop-username').textContent = u.username;
+        const chip = document.getElementById('pop-role-chip');
+        chip.textContent = u.role;
+        chip.className = `role-chip role-${u.role}`;
+        document.getElementById('pop-bio').textContent = u.bio || '';
+
+        // Avatar
+        const wrap = document.getElementById('pop-avatar-wrap');
+        wrap.innerHTML = makeAvatar(u.username, u.avatar_url, 52);
+        wrap.querySelector('img,div').style.border = '3px solid #fff';
+
+        // Staff actions — show if I'm staff and target is lower rank
+        const actions = document.getElementById('pop-staff-actions');
+        if (isStaff(ME?.role) && roleRank(u.role) < roleRank(ME?.role) && u.username !== ME?.username) {
+          actions.style.display = 'flex';
+        } else {
+          actions.style.display = 'none';
+        }
+      }).catch(() => {});
+  }
+
+  document.addEventListener('click', (e) => {
+    const pop = document.getElementById('profile-popover');
+    if (!pop.contains(e.target)) pop.style.display = 'none';
+  });
+
+  function popBan() {
+    document.getElementById('profile-popover').style.display = 'none';
+    const reason = prompt(`Ban reason for ${popoverTarget}:`);
+    if (reason === null) return;
+    adminFetch('ban', 'POST', { username: popoverTarget, reason: reason || undefined })
+      .then(d => { showToast(d.message, 'gavel'); loadUsers(); })
+      .catch(e => showToast(e.message, 'error', true));
+  }
+
+  function popDelete() {
+    document.getElementById('profile-popover').style.display = 'none';
+    if (!confirm(`Permanently delete "${popoverTarget}"?`)) return;
+    adminFetch('delete', 'DELETE', { username: popoverTarget })
+      .then(d => { showToast(d.message, 'delete_forever'); loadUsers(); })
+      .catch(e => showToast(e.message, 'error', true));
+  }
+
+  function popSetRole() {
+    document.getElementById('profile-popover').style.display = 'none';
+    document.getElementById('role-modal-target').textContent = `Changing role for: ${popoverTarget}`;
+    document.getElementById('role-modal').classList.add('show');
+  }
+
+  async function confirmSetRole() {
+    const role = document.getElementById('role-select').value;
+    document.getElementById('role-modal').classList.remove('show');
+    try {
+      const d = await adminFetch('setrole', 'POST', { username: popoverTarget, role });
+      showToast(d.message, 'manage_accounts');
+      loadUsers();
+    } catch(e) { showToast(e.message, 'error', true); }
+  }
+
+  // ============================
+  // EDIT PROFILE MODAL
+  // ============================
+  function openEditModal() {
+    document.getElementById('edit-avatar').value = ME?.avatar_url ?? '';
+    document.getElementById('edit-bio').value = ME?.bio ?? '';
+    document.getElementById('edit-modal').classList.add('show');
+  }
+  function closeEditModal() { document.getElementById('edit-modal').classList.remove('show'); }
+
+  async function saveProfile() {
+    const avatar_url = document.getElementById('edit-avatar').value.trim();
+    const bio = document.getElementById('edit-bio').value.trim();
+    try {
+      const res = await fetch('/api/profile', { method: 'PATCH', headers: authHeader(), body: JSON.stringify({ avatar_url: avatar_url || undefined, bio: bio || undefined }) });
+      const d = await res.json();
+      if (!res.ok) { showToast(d.error, 'error', true); return; }
+      ME = { ...ME, ...d.user };
+      setAvatarWrap('nav-avatar-wrap', ME.username, ME.avatar_url, 32);
+      showToast('Profile updated!', 'check_circle');
+      closeEditModal();
+    } catch { showToast('Network error.', 'wifi_off', true); }
+  }
+
+  // ============================
+  // ADMIN
   // ============================
   async function adminFetch(action, method = 'GET', body = null) {
     const opts = { method, headers: authHeader() };
     if (body) opts.body = JSON.stringify(body);
     const res = await fetch(`/api/admin?action=${action}`, opts);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Admin API error');
-    return data;
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || 'Admin error');
+    return d;
   }
 
   async function loadUsers() {
-    const tbody = document.getElementById('user-table-body');
-    tbody.innerHTML = `<div style="padding:20px;text-align:center;"><div style="width:24px;height:24px;border:3px solid var(--md-primary-container);border-top-color:var(--md-primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;"></div></div>`;
+    const table = document.getElementById('user-table');
+    table.innerHTML = `<div style="padding:20px;text-align:center;"><div class="spinner" style="width:24px;height:24px;border:3px solid var(--primary-light);border-top-color:var(--primary);margin:0 auto;"></div></div>`;
     try {
       const { users } = await adminFetch('users');
-      document.getElementById('user-count').textContent = `${users.length} player${users.length !== 1 ? 's' : ''}`;
-      if (users.length === 0) {
-        tbody.innerHTML = `<div style="padding:20px;text-align:center;color:var(--md-on-surface-variant);font-size:13px;font-weight:600;">No players yet.</div>`;
-        return;
-      }
-      tbody.innerHTML = users.map(u => `
-        <div class="staff-row">
-          <span class="material-symbols-rounded" style="color:var(--md-on-surface-variant);font-size:20px;">${isStaff(u.username) ? 'shield' : 'person'}</span>
+      document.getElementById('user-count').textContent = `${users.length} players`;
+      if (!users.length) { table.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">No players yet.</div>`; return; }
+      table.innerHTML = users.map(u => `
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          ${makeAvatar(u.username, u.avatar_url, 32)}
           <div style="flex:1;min-width:0;">
-            <p style="margin:0;font-weight:800;font-size:13px;">${u.username}${isStaff(u.username) ? ' <span style="font-size:10px;color:#E65100;">STAFF</span>' : ''}</p>
-            ${u.ban_reason ? `<p style="margin:0;font-size:11px;color:var(--md-error);">${escapeHtml(u.ban_reason)}</p>` : ''}
+            <p style="font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(u.username)}</p>
+            ${u.ban_reason ? `<p style="font-size:11px;color:var(--error);">Reason: ${escHtml(u.ban_reason)}</p>` : ''}
           </div>
-          <span class="chip ${u.status}" style="font-size:10px;">${u.status}</span>
-          ${!isStaff(u.username) ? `<div style="display:flex;gap:4px;">
+          <span class="role-chip role-${u.role}">${u.role}</span>
+          <span class="role-chip ${u.status === 'banned' ? 'role-' : ''}" style="${u.status === 'active' ? 'background:#D1FAE5;color:#059669;' : 'background:var(--error-bg);color:var(--error);'}">${u.status}</span>
+          ${roleRank(u.role) < roleRank(ME?.role) ? `
+          <div style="display:flex;gap:4px;">
+            <button onclick="openProfile(event,'${escHtml(u.username)}')" title="View profile" style="width:28px;height:28px;border-radius:6px;border:none;background:var(--primary-light);color:var(--primary);cursor:pointer;display:flex;align-items:center;justify-content:center;">
+              <span class="material-symbols-rounded" style="font-size:15px;">person</span>
+            </button>
             ${u.status === 'active'
-              ? `<button onclick="adminBanUser('${u.username}')" style="width:28px;height:28px;border-radius:6px;border:none;background:var(--md-error-container);color:var(--md-error);cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-rounded" style="font-size:16px;">block</span></button>`
-              : `<button onclick="adminUnbanUser('${u.username}')" style="width:28px;height:28px;border-radius:6px;border:none;background:#E8F5E9;color:#2E7D32;cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-rounded" style="font-size:16px;">check_circle</span></button>`}
-            <button onclick="adminDeleteUser('${u.username}')" style="width:28px;height:28px;border-radius:6px;border:none;background:var(--md-surface-variant);color:var(--md-on-surface-variant);cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-rounded" style="font-size:16px;">delete</span></button>
+              ? `<button onclick="quickBanUser('${escHtml(u.username)}')" style="width:28px;height:28px;border-radius:6px;border:none;background:var(--error-bg);color:var(--error);cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-rounded" style="font-size:15px;">block</span></button>`
+              : `<button onclick="quickUnban('${escHtml(u.username)}')" style="width:28px;height:28px;border-radius:6px;border:none;background:#D1FAE5;color:#059669;cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-rounded" style="font-size:15px;">check_circle</span></button>`}
+            <button onclick="quickDelete('${escHtml(u.username)}')" style="width:28px;height:28px;border-radius:6px;border:none;background:#F3F4F6;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-rounded" style="font-size:15px;">delete</span></button>
           </div>` : ''}
         </div>`).join('');
-    } catch (err) {
-      tbody.innerHTML = `<div style="padding:16px;text-align:center;color:var(--md-error);font-size:13px;font-weight:600;">${err.message}</div>`;
-    }
+    } catch(e) { table.innerHTML = `<div style="padding:16px;text-align:center;color:var(--error);font-size:13px;">${e.message}</div>`; }
   }
 
   async function adminBan() {
-    const username = document.getElementById('ban-username-input').value.trim();
-    const reason = document.getElementById('ban-reason-input').value.trim();
+    const username = document.getElementById('ban-u').value.trim();
+    const reason = document.getElementById('ban-r').value.trim();
     if (!username) { showToast('Enter a username.', 'warning', true); return; }
-    await _doBan(username, reason);
-    document.getElementById('ban-username-input').value = '';
-    document.getElementById('ban-reason-input').value = '';
+    try { const d = await adminFetch('ban', 'POST', { username, reason: reason || undefined }); showToast(d.message, 'gavel'); document.getElementById('ban-u').value = ''; document.getElementById('ban-r').value = ''; loadUsers(); }
+    catch(e) { showToast(e.message, 'error', true); }
   }
-  async function adminBanUser(username) {
+
+  async function quickBanUser(username) {
     const reason = prompt(`Ban reason for ${username}:`);
     if (reason === null) return;
-    await _doBan(username, reason);
-  }
-  async function _doBan(username, reason) {
     try { const d = await adminFetch('ban', 'POST', { username, reason: reason || undefined }); showToast(d.message, 'gavel'); loadUsers(); }
-    catch (err) { showToast(err.message, 'error', true); }
+    catch(e) { showToast(e.message, 'error', true); }
   }
-  async function adminUnbanUser(username) {
+
+  async function quickUnban(username) {
     try { const d = await adminFetch('unban', 'POST', { username }); showToast(d.message, 'check_circle'); loadUsers(); }
-    catch (err) { showToast(err.message, 'error', true); }
+    catch(e) { showToast(e.message, 'error', true); }
   }
-  async function adminDeleteUser(username) {
+
+  async function quickDelete(username) {
     if (!confirm(`Permanently delete "${username}"?`)) return;
     try { const d = await adminFetch('delete', 'DELETE', { username }); showToast(d.message, 'delete_forever'); loadUsers(); }
-    catch (err) { showToast(err.message, 'error', true); }
+    catch(e) { showToast(e.message, 'error', true); }
   }
-
-  // ============================
-  // BOOT
-  // ============================
-  window.onload = async () => {
-    const token = getSavedToken();
-    if (!token) { window.location.href = '/'; return; }
-
-    const user = await verifySession(token);
-    if (!user) { window.location.href = '/'; return; }
-    if (user.status === 'banned') { showBanned(user.ban_reason); return; }
-
-    showPortal(user);
-  };
 </script>
 </body>
 </html>
