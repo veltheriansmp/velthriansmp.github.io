@@ -475,7 +475,7 @@
     loadMessages();
 
     // Pusher real-time subscription
-    const pusherClient = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER });
+    const pusherClient = new Pusher(280cbae97b79cb1421b2, { cluster: ap1 });
     pusherChannel = pusherClient.subscribe('smp-chat');
     pusherChannel.bind('new-message', (msg) => {
       const box = document.getElementById('chat-messages');
