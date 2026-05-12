@@ -5,13 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cloudrend SMP</title>
 
-  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Material Symbols Rounded -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
-
-  <!-- Fonts: Nunito (body) + Syne (display) — matches the soft/rounded MD3 feel -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
 
@@ -20,7 +15,6 @@
       --md-primary: #6750A4;
       --md-primary-container: #EADDFF;
       --md-on-primary-container: #21005D;
-      --md-secondary: #625B71;
       --md-surface: #FFFBFE;
       --md-surface-variant: #E7E0EC;
       --md-on-surface: #1C1B1F;
@@ -28,581 +22,200 @@
       --md-outline: #79747E;
       --md-error: #B3261E;
       --md-error-container: #F9DEDC;
-      --md-on-error-container: #410E0B;
       --md-shadow: 0 2px 8px rgba(103,80,164,0.10), 0 1px 2px rgba(103,80,164,0.06);
       --md-shadow-lg: 0 4px 24px rgba(103,80,164,0.13), 0 2px 6px rgba(103,80,164,0.08);
     }
-
     * { box-sizing: border-box; }
-
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--md-surface);
-      color: var(--md-on-surface);
-      min-height: 100vh;
-      margin: 0;
-    }
-
-    .material-symbols-rounded {
-      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      vertical-align: middle;
-    }
-
-    /* MD3 Cards */
-    .md-card {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: var(--md-shadow);
-      overflow: hidden;
-    }
-    .md-card-elevated {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: var(--md-shadow-lg);
-    }
-
-    /* MD3 Filled Button */
-    .btn-filled {
-      background: var(--md-primary);
-      color: #fff;
-      border: none;
-      border-radius: 100px;
-      padding: 10px 24px;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      letter-spacing: 0.1px;
-      cursor: pointer;
-      transition: box-shadow 0.15s, filter 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-filled:hover { filter: brightness(1.08); box-shadow: var(--md-shadow); }
-    .btn-filled:active { filter: brightness(0.96); }
-    .btn-filled.danger { background: var(--md-error); }
-
-    /* MD3 Outlined Button */
-    .btn-outlined {
-      background: transparent;
-      color: var(--md-primary);
-      border: 1.5px solid var(--md-outline);
-      border-radius: 100px;
-      padding: 9px 24px;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
+    body { font-family: 'Nunito', sans-serif; background: var(--md-surface); color: var(--md-on-surface); min-height: 100vh; margin: 0; }
+    .material-symbols-rounded { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; }
+    .md-card { background: #fff; border-radius: 16px; box-shadow: var(--md-shadow); overflow: hidden; }
+    .md-card-elevated { background: #fff; border-radius: 20px; box-shadow: var(--md-shadow-lg); }
+    .btn-filled { background: var(--md-primary); color: #fff; border: none; border-radius: 100px; padding: 10px 24px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: filter 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-filled:hover { filter: brightness(1.08); }
+    .btn-filled:disabled { opacity: 0.7; cursor: not-allowed; }
+    .btn-outlined { background: transparent; color: var(--md-primary); border: 1.5px solid var(--md-outline); border-radius: 100px; padding: 9px 20px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: background 0.15s; display: inline-flex; align-items: center; gap: 6px; }
     .btn-outlined:hover { background: rgba(103,80,164,0.06); }
-
-    /* MD3 Text Field */
-    .md-field {
-      position: relative;
-      margin-bottom: 12px;
-    }
-    .md-field input {
-      width: 100%;
-      border: 1.5px solid var(--md-outline);
-      border-radius: 10px;
-      padding: 14px 14px 14px 42px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 15px;
-      color: var(--md-on-surface);
-      background: var(--md-surface-variant);
-      outline: none;
-      transition: border-color 0.15s;
-    }
+    .md-field { position: relative; margin-bottom: 12px; }
+    .md-field input { width: 100%; border: 1.5px solid var(--md-outline); border-radius: 10px; padding: 13px 13px 13px 40px; font-family: 'Nunito',sans-serif; font-size: 14px; color: var(--md-on-surface); background: #F8F5FF; outline: none; transition: border-color 0.15s, background 0.15s; }
     .md-field input:focus { border-color: var(--md-primary); background: #fff; }
-    .md-field .field-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--md-on-surface-variant);
-      font-size: 20px;
-      pointer-events: none;
-    }
-
-    /* Skeleton loader */
-    .skeleton {
-      background: linear-gradient(90deg, #e7e0ec 25%, #f3eeff 50%, #e7e0ec 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-      border-radius: 12px;
-    }
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    /* Page transitions */
-    .page { display: none; animation: fadeIn 0.25s ease; }
-    .page.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-    /* ---- BANNED OVERLAY ---- */
-    #banned-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: var(--md-surface);
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      text-align: center;
-      padding: 24px;
-      animation: fadeIn 0.3s ease;
-    }
-    #banned-overlay.show { display: flex; }
-
-    .banned-card {
-      background: var(--md-error-container);
-      border-radius: 28px;
-      padding: 40px 36px 32px;
-      max-width: 480px;
-      width: 100%;
-      box-shadow: 0 8px 40px rgba(179,38,30,0.15);
-    }
-    .banned-icon-wrap {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: var(--md-error);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-    }
-    .banned-icon-wrap .material-symbols-rounded {
-      color: #fff;
-      font-size: 36px;
-    }
-
-    /* Navbar */
-    nav {
-      background: #fff;
-      border-bottom: 1px solid var(--md-surface-variant);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 1px 4px rgba(103,80,164,0.07);
-    }
-
-    /* Login panel */
-    .login-panel {
-      background: #fff;
-      border-radius: 24px;
-      box-shadow: var(--md-shadow-lg);
-      padding: 32px 28px;
-      width: 100%;
-      max-width: 320px;
-    }
-
-    /* Toast */
-    #toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: #313033;
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 100px;
-      font-size: 14px;
-      font-weight: 600;
-      z-index: 10000;
-      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .md-field .fi { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--md-on-surface-variant); font-size: 18px; pointer-events: none; }
+    .tab-bar { display: flex; border-bottom: 1.5px solid var(--md-surface-variant); margin-bottom: 18px; }
+    .tab { flex: 1; padding: 10px 0; text-align: center; font-weight: 700; font-size: 14px; color: var(--md-on-surface-variant); cursor: pointer; border-bottom: 2.5px solid transparent; transition: color 0.15s, border-color 0.15s; margin-bottom: -1.5px; }
+    .tab.active { color: var(--md-primary); border-bottom-color: var(--md-primary); }
+    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #313033; color: #fff; padding: 12px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; z-index: 10000; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
     #toast.show { transform: translateX(-50%) translateY(0); }
     #toast.error { background: var(--md-error); }
+    .hero-gradient { background: linear-gradient(135deg, #EDE7F6 0%, #D1C4E9 60%, #B39DDB 100%); }
+    nav { background: #fff; border-bottom: 1px solid var(--md-surface-variant); box-shadow: 0 1px 4px rgba(103,80,164,0.07); }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+    .fu { animation: fadeUp 0.35s ease both; }
+    .fu2 { animation: fadeUp 0.35s 0.08s ease both; }
+    .fu3 { animation: fadeUp 0.35s 0.16s ease both; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { width: 17px; height: 17px; border: 2.5px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
 
-    /* Hero gradient */
-    .hero-gradient {
-      background: linear-gradient(135deg, #EDE7F6 0%, #D1C4E9 60%, #B39DDB 100%);
+    @media (max-width: 860px) {
+      .landing-grid { grid-template-columns: 1fr !important; }
+      .auth-sticky { position: static !important; }
     }
-
-    /* Status chip */
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 12px;
-      border-radius: 100px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .chip.active { background: #E8F5E9; color: #2E7D32; }
-    .chip.banned { background: var(--md-error-container); color: var(--md-error); }
-
-    /* Tab switcher (login/register) */
-    .tab-bar {
-      display: flex;
-      border-bottom: 1.5px solid var(--md-surface-variant);
-      margin-bottom: 20px;
-    }
-    .tab {
-      flex: 1;
-      padding: 10px 0;
-      text-align: center;
-      font-weight: 700;
-      font-size: 14px;
-      color: var(--md-on-surface-variant);
-      cursor: pointer;
-      border-bottom: 2.5px solid transparent;
-      transition: color 0.15s, border-color 0.15s;
-      margin-bottom: -1.5px;
-    }
-    .tab.active {
-      color: var(--md-primary);
-      border-bottom-color: var(--md-primary);
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #d0c8e0; border-radius: 99px; }
   </style>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Nunito','sans-serif'], display: ['Syne','sans-serif'] }
-        }
-      }
-    }
-  </script>
 </head>
 <body>
 
-<!-- ==============================
-     BANNED OVERLAY
-     Shown immediately if API returns status === 'banned'
-============================== -->
-<div id="banned-overlay" role="alertdialog" aria-modal="true" aria-label="Banned from SMP">
-  <div class="banned-card">
-    <div class="banned-icon-wrap">
-      <span class="material-symbols-rounded">gavel</span>
-    </div>
-    <h1 style="font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:var(--md-on-error-container); margin:0 0 6px;">
-      You are banned from the SMP
-    </h1>
-    <p style="color:var(--md-on-error-container); opacity:0.7; font-size:14px; margin:0 0 20px;">
-      Seriously, what did you do. 7.7
-    </p>
-
-    <!-- Avatar placeholder -->
-    <div style="width:72px;height:72px;border-radius:50%;background:#c2a8f0;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
-      <span class="material-symbols-rounded" style="font-size:36px;color:#fff;">person</span>
-    </div>
-
-    <p style="font-size:13px; color:var(--md-on-error-container); line-height:1.6; margin:0 0 8px;">
-      You are banned on <strong>Cloudrend SMP</strong> for doing the following actions. You have <strong>188 days</strong> to appeal or get kicked out of your own account.
-    </p>
-    <div style="background:rgba(179,38,30,0.12);border-radius:12px;padding:10px 14px;margin-bottom:24px;text-align:left;">
-      <p style="font-size:12px;color:var(--md-on-error-container);margin:0;font-weight:600;">
-        Reason: <span id="ban-reason-text">SMP AFK ops. We can not tolerate this type of actions.</span>
-      </p>
-    </div>
-
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn-outlined" onclick="window.open('https://discord.gg/your-appeal-link','_blank')" style="border-color:var(--md-error);color:var(--md-error);">
-        <span class="material-symbols-rounded" style="font-size:18px;">open_in_new</span>
-        Appeal
-      </button>
-      <button class="btn-filled danger" onclick="logout()">
-        <span class="material-symbols-rounded" style="font-size:18px;">logout</span>
-        Log out
-      </button>
-    </div>
-  </div>
-
-  <!-- Bottom status bar — matches design screenshot -->
-  <div style="position:fixed;bottom:0;left:0;right:0;background:#313033;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;">
-    <span style="color:#fff;font-size:13px;font-weight:600;">
-      <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle;margin-right:4px;">block</span>
-      You are banned from this Server
-    </span>
-    <span class="chip banned">ACCOUNT STATUS</span>
-  </div>
-</div>
-
-<!-- ==============================
-     TOAST NOTIFICATION
-============================== -->
 <div id="toast">
   <span class="material-symbols-rounded" id="toast-icon" style="font-size:18px;">info</span>
   <span id="toast-msg"></span>
 </div>
 
-<!-- ==============================
-     LOADING SCREEN
-============================== -->
-<div id="loading-screen" style="position:fixed;inset:0;background:var(--md-surface);z-index:9000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
-  <div style="width:48px;height:48px;border:3.5px solid var(--md-primary-container);border-top-color:var(--md-primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-  <p style="color:var(--md-on-surface-variant);font-weight:600;font-size:14px;">Loading Cloudrend SMP…</p>
-  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-</div>
-
-<!-- ==============================
-     NAVBAR
-============================== -->
-<nav id="main-nav" style="display:none;">
+<!-- NAV -->
+<nav>
   <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
-    <a href="#" style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--md-primary);text-decoration:none;letter-spacing:-0.3px;">
-      Cloudrend SMP
-    </a>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span id="nav-username" style="font-size:14px;font-weight:700;color:var(--md-on-surface-variant);"></span>
-      <span id="nav-staff-badge" style="display:none;background:#FFF3E0;color:#E65100;font-size:11px;font-weight:800;padding:3px 10px;border-radius:100px;letter-spacing:0.3px;">
-        <span class="material-symbols-rounded" style="font-size:13px;vertical-align:middle;">shield</span>
-        STAFF
-      </span>
-      <button class="btn-outlined" onclick="logout()" style="padding:7px 16px;font-size:13px;">
-        <span class="material-symbols-rounded" style="font-size:16px;">logout</span>
-        Logout
-      </button>
-    </div>
+    <span style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--md-primary);">Cloudrend SMP</span>
+    <button class="btn-outlined" onclick="document.getElementById('auth-section').scrollIntoView({behavior:'smooth'})" style="padding:7px 18px;font-size:13px;">
+      <span class="material-symbols-rounded" style="font-size:16px;">login</span>Login
+    </button>
   </div>
 </nav>
 
-<!-- ==============================
-     MAIN CONTENT WRAPPER
-============================== -->
-<main id="main-content" style="display:none;max-width:1200px;margin:0 auto;padding:32px 24px;">
+<div class="landing-grid" style="max-width:1200px;margin:0 auto;padding:40px 24px;display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start;">
 
-  <!-- Hero -->
-  <div class="hero-gradient md-card" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:40px;margin-bottom:28px;border-radius:24px;">
-    <div>
-      <h1 style="font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,40px);font-weight:800;margin:0 0 8px;color:#21005D;line-height:1.1;">
+  <!-- LEFT: public content -->
+  <div>
+    <!-- Hero -->
+    <div class="hero-gradient md-card fu" style="padding:44px 40px;margin-bottom:28px;border-radius:24px;">
+      <h1 style="font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,46px);font-weight:800;margin:0 0 10px;color:#21005D;line-height:1.1;">
         Welcome to<br/>Cloudrend SMP
       </h1>
-      <p style="color:#4527A0;font-size:15px;margin:0 0 20px;font-weight:600;">
-        A newly launched SMP that has been recently started!
+      <p style="color:#4527A0;font-size:15px;margin:0 0 24px;font-weight:600;max-width:420px;">
+        A newly launched SMP that has been recently started! Join our community and start your adventure.
       </p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn-filled" onclick="showToast('Coming soon!','schedule')">
-          <span class="material-symbols-rounded" style="font-size:18px;">public</span>
-          Apply now →
+        <button class="btn-filled" onclick="document.getElementById('auth-section').scrollIntoView({behavior:'smooth'})">
+          <span class="material-symbols-rounded" style="font-size:18px;">how_to_reg</span>Join now →
         </button>
-        <button class="btn-outlined" onclick="showToast('Opening Discord…','discord')">
-          Discord
+        <button class="btn-outlined" onclick="window.open('https://discord.gg/your-server','_blank')">
+          <span class="material-symbols-rounded" style="font-size:18px;">tag</span>Discord
         </button>
       </div>
     </div>
-    <div style="width:180px;height:140px;background:rgba(103,80,164,0.15);border-radius:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <span class="material-symbols-rounded" style="font-size:80px;color:rgba(103,80,164,0.3);">terrain</span>
-    </div>
-  </div>
 
-  <!-- What we offer -->
-  <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin:0 0 16px;">What we offer?</h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:32px;">
-    <!-- Offer cards -->
-    <div class="md-card" style="padding:20px;">
-      <div style="width:44px;height:44px;border-radius:12px;background:var(--md-primary-container);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-        <span class="material-symbols-rounded" style="color:var(--md-primary);">inventory_2</span>
+    <!-- What we offer -->
+    <h2 class="fu2" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin:0 0 16px;">What we offer?</h2>
+    <div class="fu2" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin-bottom:28px;">
+      <div class="md-card" style="padding:20px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--md-primary-container);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+          <span class="material-symbols-rounded" style="color:var(--md-primary);">inventory_2</span>
+        </div>
+        <h3 style="font-weight:800;font-size:15px;margin:0 0 4px;">Starter Kit!</h3>
+        <p style="font-size:11px;color:var(--md-on-surface-variant);margin:0 0 8px;font-weight:700;">from Arthur &amp; Toolkit</p>
+        <p style="font-size:13px;color:var(--md-on-surface-variant);line-height:1.6;margin:0;">Allows you to properly prepare for each big event. Drops your iron to start out — thank you for joining the server!</p>
       </div>
-      <h3 style="font-weight:800;font-size:15px;margin:0 0 6px;">Starter Kit!</h3>
-      <p style="font-size:12px;color:var(--md-on-surface-variant);line-height:1.5;margin:0;font-weight:600;">from Arthur &amp; Toolkit</p>
-      <p style="font-size:13px;color:var(--md-on-surface-variant);line-height:1.6;margin-top:8px;">
-        Starter Kit allows you to properly prepare for each big events like, dropping your iron to start out so it can thank you for joining the server!
-      </p>
-    </div>
-    <div class="md-card" style="padding:20px;">
-      <div style="width:44px;height:44px;border-radius:12px;background:#E3F2FD;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-        <span class="material-symbols-rounded" style="color:#1565C0;">diamond</span>
+      <div class="md-card" style="padding:20px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:#E3F2FD;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+          <span class="material-symbols-rounded" style="color:#1565C0;">diamond</span>
+        </div>
+        <h3 style="font-weight:800;font-size:15px;margin:0 0 4px;">Starter Kit!</h3>
+        <p style="font-size:11px;color:var(--md-on-surface-variant);margin:0 0 8px;font-weight:700;">from Arthur &amp; Toolkit</p>
+        <p style="font-size:13px;color:var(--md-on-surface-variant);line-height:1.6;margin:0;">Ships your iron ration to carry you through the first season — no grinding from nothing on day one.</p>
       </div>
-      <h3 style="font-weight:800;font-size:15px;margin:0 0 6px;">Starter Kit!</h3>
-      <p style="font-size:12px;color:var(--md-on-surface-variant);line-height:1.5;margin:0;font-weight:600;">from Arthur &amp; Toolkit</p>
-      <p style="font-size:13px;color:var(--md-on-surface-variant);line-height:1.6;margin-top:8px;">
-        Starter Kit allows you to properly prepare for each big events like, dropping your iron to start out so it can thank you for joining the server!
-      </p>
-    </div>
-    <div class="md-card" style="padding:20px;">
-      <div style="width:44px;height:44px;border-radius:12px;background:#E8F5E9;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-        <span class="material-symbols-rounded" style="color:#2E7D32;">forest</span>
+      <div class="md-card" style="padding:20px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:#E8F5E9;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+          <span class="material-symbols-rounded" style="color:#2E7D32;">forest</span>
+        </div>
+        <h3 style="font-weight:800;font-size:15px;margin:0 0 4px;">Starter Kit!</h3>
+        <p style="font-size:11px;color:var(--md-on-surface-variant);margin:0 0 8px;font-weight:700;">from Arthur &amp; Toolkit</p>
+        <p style="font-size:13px;color:var(--md-on-surface-variant);line-height:1.6;margin:0;">Drops your iron and pushes you to the nearest biome — a thank you for joining the server.</p>
       </div>
-      <h3 style="font-weight:800;font-size:15px;margin:0 0 6px;">Starter Kit!</h3>
-      <p style="font-size:12px;color:var(--md-on-surface-variant);line-height:1.5;margin:0;font-weight:600;">from Arthur &amp; Toolkit</p>
-      <p style="font-size:13px;color:var(--md-on-surface-variant);line-height:1.6;margin-top:8px;">
-        Starter Kit allows you to properly prepare for each big events like, dropping your iron to start out so it can thank you for joining the server!
-      </p>
     </div>
-  </div>
 
-  <!-- Account status card -->
-  <div class="md-card" style="padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-    <span class="material-symbols-rounded" style="font-size:32px;color:var(--md-primary);">account_circle</span>
-    <div style="flex:1;">
-      <p style="margin:0;font-weight:800;" id="dashboard-username">—</p>
-      <p style="margin:0;font-size:13px;color:var(--md-on-surface-variant);">Logged in via SMP Hub</p>
-    </div>
-    <span class="chip active" id="dashboard-status">active</span>
-  </div>
-
-  <!-- ==============================
-       STAFF PANEL — only rendered for staff accounts
-  ============================== -->
-  <div id="staff-panel" style="display:none;margin-top:36px;">
-
-    <!-- Header -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-      <div style="width:40px;height:40px;border-radius:12px;background:#FFF3E0;display:flex;align-items:center;justify-content:center;">
-        <span class="material-symbols-rounded" style="color:#E65100;font-size:22px;">admin_panel_settings</span>
+    <!-- Server IP -->
+    <div class="md-card fu3" style="padding:20px;display:flex;align-items:center;gap:14px;border-radius:16px;">
+      <div style="width:44px;height:44px;border-radius:12px;background:var(--md-primary-container);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-rounded" style="color:var(--md-primary);">dns</span>
       </div>
-      <div>
-        <h2 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin:0;color:var(--md-on-surface);">Staff Panel</h2>
-        <p style="margin:0;font-size:12px;color:var(--md-on-surface-variant);font-weight:600;">Manage players — handle with care</p>
+      <div style="flex:1;">
+        <p style="margin:0 0 2px;font-weight:800;font-size:14px;">Server IP</p>
+        <code style="font-size:14px;font-weight:700;color:var(--md-primary);">cloudrend.playwithbao.com</code>
       </div>
-      <button class="btn-outlined" onclick="loadUsers()" style="margin-left:auto;padding:7px 16px;font-size:13px;">
-        <span class="material-symbols-rounded" style="font-size:16px;">refresh</span>
-        Refresh
+      <button class="btn-outlined" onclick="navigator.clipboard.writeText('cloudrend.playwithbao.com');showToast('Copied!','content_copy')" style="padding:8px 16px;font-size:13px;">
+        <span class="material-symbols-rounded" style="font-size:16px;">content_copy</span>Copy
       </button>
     </div>
+  </div>
 
-    <!-- Quick action: Ban a user -->
-    <div class="md-card" style="padding:20px;margin-bottom:16px;border-left:4px solid var(--md-error);">
-      <h3 style="font-weight:800;font-size:14px;margin:0 0 12px;color:var(--md-error);display:flex;align-items:center;gap:6px;">
-        <span class="material-symbols-rounded" style="font-size:18px;">gavel</span>
-        Ban a Player
-      </h3>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <div class="md-field" style="flex:1;min-width:140px;margin-bottom:0;">
-          <span class="material-symbols-rounded field-icon">person</span>
-          <input type="text" id="ban-username-input" placeholder="Username" />
+  <!-- RIGHT: Auth panel -->
+  <div id="auth-section" class="auth-sticky" style="position:sticky;top:88px;">
+    <div class="md-card-elevated fu" style="padding:28px 24px;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="width:52px;height:52px;border-radius:16px;background:var(--md-primary);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+          <span class="material-symbols-rounded" style="color:#fff;font-size:26px;">dns</span>
         </div>
-        <div class="md-field" style="flex:2;min-width:200px;margin-bottom:0;">
-          <span class="material-symbols-rounded field-icon">edit_note</span>
-          <input type="text" id="ban-reason-input" placeholder="Reason (optional)" />
-        </div>
-        <button class="btn-filled danger" onclick="adminBan()" style="align-self:flex-end;padding:13px 20px;">
-          <span class="material-symbols-rounded" style="font-size:18px;">block</span>
-          Ban
-        </button>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin:0;color:var(--md-primary);">Cloudrend SMP</h2>
+        <p style="font-size:12px;color:var(--md-on-surface-variant);margin:4px 0 0;font-weight:600;">Hub Portal</p>
       </div>
-    </div>
 
-    <!-- User table -->
-    <div class="md-card" style="padding:0;overflow:hidden;">
-      <div style="padding:16px 20px;border-bottom:1px solid var(--md-surface-variant);display:flex;align-items:center;justify-content:space-between;">
-        <p style="margin:0;font-weight:800;font-size:14px;">All Players</p>
-        <span id="user-count" style="font-size:12px;color:var(--md-on-surface-variant);font-weight:600;"></span>
-      </div>
-      <div id="user-table-body" style="min-height:80px;">
-        <!-- Rows injected by JS -->
-        <div style="padding:32px;text-align:center;color:var(--md-on-surface-variant);font-size:13px;font-weight:600;">
-          <span class="material-symbols-rounded" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.4;">group</span>
-          Click Refresh to load players
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /staff-panel -->
-
-</main>
-
-<!-- ==============================
-     AUTH PANEL (not logged in)
-============================== -->
-<div id="auth-panel" style="display:none;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#F3E5F5 0%,#EDE7F6 60%,#D1C4E9 100%);">
-  <div style="width:100%;max-width:360px;">
-
-    <!-- Branding -->
-    <div style="text-align:center;margin-bottom:24px;">
-      <div style="width:56px;height:56px;border-radius:16px;background:var(--md-primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-        <span class="material-symbols-rounded" style="color:#fff;font-size:28px;">dns</span>
-      </div>
-      <h1 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin:0;color:var(--md-primary);">Cloudrend SMP</h1>
-    </div>
-
-    <div class="md-card-elevated" style="padding:28px 24px;border-radius:24px;">
-
-      <!-- Tab bar -->
       <div class="tab-bar">
         <div class="tab active" id="tab-login" onclick="switchTab('login')">Login</div>
         <div class="tab" id="tab-register" onclick="switchTab('register')">Register</div>
       </div>
 
-      <!-- LOGIN FORM -->
+      <!-- LOGIN -->
       <div id="form-login">
-        <p style="font-size:13px;color:var(--md-on-surface-variant);margin:0 0 16px;font-weight:600;">
-          Login with your Cloudrend SMP hub to access limited in-game<br/>features.
+        <p style="font-size:13px;color:var(--md-on-surface-variant);margin:0 0 14px;font-weight:600;line-height:1.5;">
+          Login with your Cloudrend SMP hub to access in-game features, live chat, and more.
         </p>
         <div class="md-field">
-          <span class="material-symbols-rounded field-icon">person</span>
+          <span class="material-symbols-rounded fi">person</span>
           <input type="text" id="login-username" placeholder="Username" autocomplete="username" />
         </div>
         <div class="md-field">
-          <span class="material-symbols-rounded field-icon">lock</span>
+          <span class="material-symbols-rounded fi">lock</span>
           <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" />
         </div>
         <div style="display:flex;gap:8px;margin-top:4px;">
-          <button class="btn-filled" style="flex:1;justify-content:center;" onclick="handleLogin()">Login</button>
-          <button class="btn-outlined" style="padding:10px 18px;" onclick="switchTab('register')">Cancel</button>
+          <button class="btn-filled" id="login-btn" style="flex:1;justify-content:center;" onclick="handleLogin()">Login</button>
+          <button class="btn-outlined" style="padding:10px 16px;" onclick="switchTab('register')">Register</button>
         </div>
       </div>
 
-      <!-- REGISTER FORM -->
+      <!-- REGISTER -->
       <div id="form-register" style="display:none;">
-        <div style="background:var(--md-surface-variant);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
-          <p style="font-size:13px;color:var(--md-on-surface-variant);margin:0;line-height:1.6;font-weight:600;">
-            <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle;color:var(--md-primary);">info</span>
-            You must re-register in-game! Register at Cloudrend SMP in-game using this command:
+        <div style="background:#F8F5FF;border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+          <p style="font-size:12px;color:var(--md-on-surface-variant);margin:0 0 6px;font-weight:700;display:flex;align-items:center;gap:4px;">
+            <span class="material-symbols-rounded" style="font-size:15px;color:var(--md-primary);">info</span>
+            Register in-game first!
           </p>
-          <code style="display:block;margin-top:6px;background:#E8DEF8;border-radius:8px;padding:6px 10px;font-size:12px;color:var(--md-primary);font-family:'JetBrains Mono',monospace;">/register &lt;yourpassword&gt; &lt;yourpassword&gt;</code>
-          <p style="font-size:12px;color:var(--md-on-surface-variant);margin:8px 0 0;line-height:1.6;">
-            If your username is Crafted, you must set a password by typing the command above. You need enter "your password" 2 times of your username or password to Minecraft. Make sure to include this code into this Hub application.
-          </p>
+          <p style="font-size:12px;color:var(--md-on-surface-variant);margin:0 0 6px;line-height:1.5;">Join the server and run:</p>
+          <code style="display:block;background:#E8DEF8;border-radius:8px;padding:6px 10px;font-size:12px;color:var(--md-primary);">/register &lt;password&gt; &lt;password&gt;</code>
+          <p style="font-size:11px;color:var(--md-on-surface-variant);margin:6px 0 0;line-height:1.5;">Use the same password here as in-game.</p>
         </div>
         <div class="md-field">
-          <span class="material-symbols-rounded field-icon">person</span>
+          <span class="material-symbols-rounded fi">person</span>
           <input type="text" id="reg-username" placeholder="Minecraft username" autocomplete="username" />
         </div>
         <div class="md-field">
-          <span class="material-symbols-rounded field-icon">lock</span>
+          <span class="material-symbols-rounded fi">lock</span>
           <input type="password" id="reg-password" placeholder="Password (min. 8 chars)" autocomplete="new-password" />
         </div>
-        <button class="btn-filled" style="width:100%;justify-content:center;" onclick="handleRegister()">
-          <span class="material-symbols-rounded" style="font-size:18px;">how_to_reg</span>
-          Continue →
+        <button class="btn-filled" id="reg-btn" style="width:100%;justify-content:center;" onclick="handleRegister()">
+          <span class="material-symbols-rounded" style="font-size:18px;">how_to_reg</span>Continue →
         </button>
       </div>
-
     </div>
   </div>
+
 </div>
 
-<!-- ==============================
-     JAVASCRIPT
-============================== -->
 <script>
-  // ---- State ----
-  let currentUser = null;
-
-  // ---- Toast ----
   function showToast(msg, icon = 'info', isError = false) {
     const t = document.getElementById('toast');
-    const m = document.getElementById('toast-msg');
-    const i = document.getElementById('toast-icon');
-    m.textContent = msg;
-    i.textContent = icon;
+    document.getElementById('toast-msg').textContent = msg;
+    document.getElementById('toast-icon').textContent = icon;
     t.className = isError ? 'error show' : 'show';
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => { t.className = isError ? 'error' : ''; }, 3500);
+    clearTimeout(t._t);
+    t._t = setTimeout(() => { t.className = isError ? 'error' : ''; }, 3200);
   }
 
-  // ---- Tab switching ----
   function switchTab(tab) {
     document.getElementById('tab-login').classList.toggle('active', tab === 'login');
     document.getElementById('tab-register').classList.toggle('active', tab === 'register');
@@ -610,328 +223,69 @@
     document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
   }
 
-  // ---- Session helpers ----
   function saveSession(token, user) {
     localStorage.setItem('smp_token', token);
     localStorage.setItem('smp_user', JSON.stringify(user));
   }
-  function clearSession() {
-    localStorage.removeItem('smp_token');
-    localStorage.removeItem('smp_user');
-  }
-  function getSavedToken() {
-    return localStorage.getItem('smp_token');
-  }
 
-  // ---- Banned overlay ----
-  function showBanned(ban_reason) {
-    document.getElementById('ban-reason-text').textContent =
-      ban_reason || 'No reason provided by staff.';
-    document.getElementById('banned-overlay').classList.add('show');
-    document.getElementById('main-nav').style.display = 'none';
-    document.getElementById('main-content').style.display = 'none';
-    document.getElementById('auth-panel').style.display = 'none';
+  function setLoading(btnId, loading, origHTML) {
+    const btn = document.getElementById(btnId);
+    if (loading) { btn._orig = btn.innerHTML; btn.innerHTML = '<div class="spinner"></div>'; btn.disabled = true; }
+    else { btn.innerHTML = btn._orig; btn.disabled = false; }
   }
 
-  // ---- Show dashboard ----
-  function showDashboard(user) {
-    currentUser = user;
-    document.getElementById('nav-username').textContent = user.username;
-    document.getElementById('dashboard-username').textContent = user.username;
-    document.getElementById('main-nav').style.display = '';
-    document.getElementById('main-content').style.display = '';
-    document.getElementById('auth-panel').style.display = 'none';
-    document.getElementById('loading-screen').style.display = 'none';
-
-    // Staff-only UI
-    if (isStaff(user.username)) {
-      document.getElementById('staff-panel').style.display = '';
-      document.getElementById('nav-staff-badge').style.display = 'inline-flex';
-      loadUsers(); // auto-load table on login
-    }
-  }
-
-  // ---- Show auth ----
-  function showAuth() {
-    document.getElementById('auth-panel').style.display = 'flex';
-    document.getElementById('main-nav').style.display = 'none';
-    document.getElementById('main-content').style.display = 'none';
-    document.getElementById('loading-screen').style.display = 'none';
-  }
-
-  // ---- Logout ----
-  function logout() {
-    clearSession();
-    currentUser = null;
-    document.getElementById('banned-overlay').classList.remove('show');
-    showAuth();
-    showToast('Logged out.', 'logout');
-  }
-
-  // ---- Verify session via /api/me ----
-  async function verifySession(token) {
-    try {
-      const res = await fetch('/api/me', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (res.status === 401 || res.status === 403) {
-        clearSession();
-        return null;
-      }
-
-      if (!res.ok) {
-        // Server error — don't nuke session, but show error
-        showToast('Session check failed. Try refreshing.', 'cloud_off', true);
-        return null;
-      }
-
-      return await res.json();
-    } catch (err) {
-      console.error('[verifySession]', err);
-      showToast('Network error. Check your connection.', 'wifi_off', true);
-      return null;
-    }
-  }
-
-  // ---- Handle user data (ban check + routing) ----
-  function handleUserData(user) {
-    if (!user) { showAuth(); return; }
-
-    if (user.status === 'banned') {
-      // Save session so ban screen persists on reload, but block access
-      showBanned(user.ban_reason);
-      return;
-    }
-
-    showDashboard(user);
-  }
-
-  // ---- Login ----
   async function handleLogin() {
     const username = document.getElementById('login-username').value.trim();
     const password = document.getElementById('login-password').value;
-
-    if (!username || !password) {
-      showToast('Fill in all fields.', 'warning', true); return;
-    }
-
+    if (!username || !password) { showToast('Fill in all fields.', 'warning', true); return; }
+    setLoading('login-btn', true);
     try {
-      const res = await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-
+      const res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
       const data = await res.json();
-
-      if (!res.ok) {
-        showToast(data.error || 'Login failed.', 'error', true); return;
-      }
-
+      if (!res.ok) { showToast(data.error || 'Login failed.', 'error', true); return; }
       saveSession(data.token, data.user);
       showToast(`Welcome back, ${data.user.username}!`, 'waving_hand');
-      handleUserData(data.user);
-    } catch (err) {
-      console.error('[login]', err);
-      showToast('Network error.', 'wifi_off', true);
-    }
+      setTimeout(() => { window.location.href = '/portal.html'; }, 500);
+    } catch { showToast('Network error.', 'wifi_off', true); }
+    finally { setLoading('login-btn', false); }
   }
 
-  // ---- Register ----
   async function handleRegister() {
     const username = document.getElementById('reg-username').value.trim();
     const password = document.getElementById('reg-password').value;
-
-    if (!username || !password) {
-      showToast('Fill in all fields.', 'warning', true); return;
-    }
-    if (password.length < 8) {
-      showToast('Password must be 8+ chars.', 'lock', true); return;
-    }
-
+    if (!username || !password) { showToast('Fill in all fields.', 'warning', true); return; }
+    if (password.length < 8) { showToast('Password must be 8+ chars.', 'lock', true); return; }
+    setLoading('reg-btn', true);
     try {
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-
+      const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
       const data = await res.json();
-
-      if (res.status === 409) {
-        showToast('Username already taken.', 'person_off', true); return;
-      }
-      if (!res.ok) {
-        showToast(data.error || 'Registration failed.', 'error', true); return;
-      }
-
+      if (res.status === 409) { showToast('Username already taken.', 'person_off', true); return; }
+      if (!res.ok) { showToast(data.error || 'Registration failed.', 'error', true); return; }
       saveSession(data.token, data.user);
       showToast(`Welcome, ${data.user.username}! 🎉`, 'celebration');
-      handleUserData(data.user);
-    } catch (err) {
-      console.error('[register]', err);
-      showToast('Network error.', 'wifi_off', true);
-    }
+      setTimeout(() => { window.location.href = '/portal.html'; }, 500);
+    } catch { showToast('Network error.', 'wifi_off', true); }
+    finally { setLoading('reg-btn', false); }
   }
 
-  // ---- Staff list (mirrors api/admin.js — keep in sync) ----
-  const STAFF = ['neurotic_orchid'];
-  function isStaff(username) {
-    return STAFF.some(u => u.toLowerCase() === username?.toLowerCase());
-  }
-
-  // ---- Admin API helper ----
-  async function adminFetch(action, method = 'GET', body = null) {
-    const token = getSavedToken();
-    const opts = {
-      method,
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-    };
-    if (body) opts.body = JSON.stringify(body);
-    const res = await fetch(`/api/admin?action=${action}`, opts);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Admin API error');
-    return data;
-  }
-
-  // ---- Load user table ----
-  async function loadUsers() {
-    const tbody = document.getElementById('user-table-body');
-    tbody.innerHTML = `<div style="padding:24px;text-align:center;">
-      <div style="width:28px;height:28px;border:3px solid var(--md-primary-container);border-top-color:var(--md-primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;"></div>
-    </div>`;
-
-    try {
-      const { users } = await adminFetch('users');
-      document.getElementById('user-count').textContent = `${users.length} player${users.length !== 1 ? 's' : ''}`;
-
-      if (users.length === 0) {
-        tbody.innerHTML = `<div style="padding:32px;text-align:center;color:var(--md-on-surface-variant);font-size:13px;font-weight:600;">No players registered yet.</div>`;
-        return;
-      }
-
-      tbody.innerHTML = users.map(u => `
-        <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--md-surface-variant);">
-          <span class="material-symbols-rounded" style="color:var(--md-on-surface-variant);font-size:22px;">
-            ${isStaff(u.username) ? 'shield' : 'person'}
-          </span>
-          <div style="flex:1;min-width:0;">
-            <p style="margin:0;font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-              ${u.username}
-              ${isStaff(u.username) ? '<span style="font-size:11px;color:#E65100;font-weight:700;margin-left:6px;">STAFF</span>' : ''}
-            </p>
-            ${u.ban_reason ? `<p style="margin:0;font-size:12px;color:var(--md-error);">Reason: ${u.ban_reason}</p>` : ''}
-          </div>
-          <span class="chip ${u.status}">${u.status}</span>
-          ${!isStaff(u.username) ? `
-          <div style="display:flex;gap:6px;">
-            ${u.status === 'active'
-              ? `<button onclick="adminBanUser('${u.username}')" title="Ban" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--md-error-container);color:var(--md-error);cursor:pointer;display:flex;align-items:center;justify-content:center;">
-                  <span class="material-symbols-rounded" style="font-size:18px;">block</span>
-                </button>`
-              : `<button onclick="adminUnbanUser('${u.username}')" title="Unban" style="width:32px;height:32px;border-radius:8px;border:none;background:#E8F5E9;color:#2E7D32;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-                  <span class="material-symbols-rounded" style="font-size:18px;">check_circle</span>
-                </button>`
-            }
-            <button onclick="adminDeleteUser('${u.username}')" title="Delete account" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--md-surface-variant);color:var(--md-on-surface-variant);cursor:pointer;display:flex;align-items:center;justify-content:center;">
-              <span class="material-symbols-rounded" style="font-size:18px;">delete</span>
-            </button>
-          </div>` : ''}
-        </div>
-      `).join('');
-    } catch (err) {
-      tbody.innerHTML = `<div style="padding:24px;text-align:center;color:var(--md-error);font-size:13px;font-weight:600;">${err.message}</div>`;
-    }
-  }
-
-  // ---- Ban via quick-action form ----
-  async function adminBan() {
-    const username = document.getElementById('ban-username-input').value.trim();
-    const reason = document.getElementById('ban-reason-input').value.trim();
-    if (!username) { showToast('Enter a username.', 'warning', true); return; }
-    await _doBan(username, reason);
-    document.getElementById('ban-username-input').value = '';
-    document.getElementById('ban-reason-input').value = '';
-  }
-
-  // ---- Ban via table row button ----
-  async function adminBanUser(username) {
-    const reason = prompt(`Ban reason for ${username} (leave blank for default):`);
-    if (reason === null) return; // cancelled
-    await _doBan(username, reason);
-  }
-
-  async function _doBan(username, reason) {
-    try {
-      const data = await adminFetch('ban', 'POST', { username, reason: reason || undefined });
-      showToast(data.message, 'gavel');
-      loadUsers();
-    } catch (err) {
-      showToast(err.message, 'error', true);
-    }
-  }
-
-  // ---- Unban ----
-  async function adminUnbanUser(username) {
-    try {
-      const data = await adminFetch('unban', 'POST', { username });
-      showToast(data.message, 'check_circle');
-      loadUsers();
-    } catch (err) {
-      showToast(err.message, 'error', true);
-    }
-  }
-
-  // ---- Delete ----
-  async function adminDeleteUser(username) {
-    if (!confirm(`Permanently delete account "${username}"? This cannot be undone.`)) return;
-    try {
-      const data = await adminFetch('delete', 'DELETE', { username });
-      showToast(data.message, 'delete_forever');
-      loadUsers();
-    } catch (err) {
-      showToast(err.message, 'error', true);
-    }
-  }
-
-  // ---- Keyboard shortcuts ----
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const loginVisible = document.getElementById('form-login').style.display !== 'none';
-      const authVisible = document.getElementById('auth-panel').style.display !== 'none';
-      if (authVisible && loginVisible) handleLogin();
-      else if (authVisible) handleRegister();
-    }
+    if (e.key !== 'Enter') return;
+    const loginVisible = document.getElementById('form-login').style.display !== 'none';
+    loginVisible ? handleLogin() : handleRegister();
   });
 
-  // ============================
-  // window.onload — session gate
-  // ============================
+  // Already logged in? Skip landing, go straight to portal
   window.onload = async () => {
-    const token = getSavedToken();
-
-    if (!token) {
-      // No local session at all → straight to auth
-      showAuth();
-      return;
-    }
-
-    // Token exists → validate it server-side to prevent spoofing
-    // A locally-crafted token will be rejected if user/id don't match DB
-    const user = await verifySession(token);
-
-    if (!user) {
-      // Token was invalid/expired — wipe it and send to auth
-      clearSession();
-      showAuth();
-      return;
-    }
-
-    // Valid session — route by status
-    handleUserData(user);
+    const token = localStorage.getItem('smp_token');
+    if (!token) return;
+    try {
+      const res = await fetch('/api/me', { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) {
+        const u = await res.json();
+        if (u.status !== 'banned') window.location.href = '/portal.html';
+      }
+    } catch { /* stay */ }
   };
 </script>
-
 </body>
 </html>
