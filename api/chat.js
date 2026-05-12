@@ -1,14 +1,12 @@
 import { sql } from '@vercel/postgres';
 import Pusher from 'pusher';
 
-// Ensure these env vars are set in Vercel dashboard:
-// PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET, PUSHER_CLUSTER
 const pusher = new Pusher({
-  appId: process.env.PUSHER_APP_ID,
-  key: process.env.PUSHER_KEY,
-  secret: process.env.PUSHER_SECRET,
-  cluster: process.env.PUSHER_CLUSTER,
-  useTLS: true,
+  appId: "2153636",
+  key: "280cbae97b79cb1421b2",
+  secret: "bcfb2533ab20cc8368c1",
+  cluster: "ap1",
+  useTLS: true
 });
 
 // Reuse token auth from me.js
