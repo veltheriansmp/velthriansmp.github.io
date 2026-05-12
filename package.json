@@ -2,9 +2,12 @@
   "name": "cloudrend-hub",
   "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "build": "echo 'No frontend to build, deploying serverless functions...'"
+  },
   "dependencies": {
     "@vercel/postgres": "^0.8.0",
-    "bcryptjs": "^2.4.3"
+    "bcryptjs": "^2.4.3",
     "pusher": "^5.2.0"
   }
 }
