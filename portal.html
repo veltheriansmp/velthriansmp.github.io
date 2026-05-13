@@ -93,6 +93,7 @@
     /* Message rows */
     .msg-row { display: flex; gap: 10px; padding: 4px 6px; border-radius: 8px; transition: background 0.1s; }
     .msg-row:hover { background: rgba(124,58,237,0.04); }
+    .msg-row.local-message { opacity: 0.8; }
     .msg-row.continued { padding-top: 1px; }
     .msg-row.continued .msg-avatar-slot { visibility: hidden; }
     .msg-avatar-slot { width: 34px; flex-shrink: 0; padding-top: 2px; }
@@ -106,6 +107,7 @@
     .source-web { background: var(--primary-light); color: var(--primary); }
     .source-discord { background: #EEF2FF; color: #5865F2; }
     .source-minecraft { background: #D1FAE5; color: #059669; }
+    .warning-chip { display: inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:700; background:#FEF3C7; color:#B45309; }
 
     /* Profile popover */
     #profile-popover { display: none; position: fixed; z-index: 200; width: 280px; background: var(--card); border-radius: 16px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden; animation: popIn 0.15s ease; }
@@ -197,6 +199,9 @@
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;" onclick="popSetRole()">
           <span class="material-symbols-rounded" style="font-size:14px;">manage_accounts</span>Set Role
+        </button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;" onclick="popWarn()">
+          <span class="material-symbols-rounded" style="font-size:14px;">warning</span>Warn
         </button>
         <button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;" onclick="popBan()">
           <span class="material-symbols-rounded" style="font-size:14px;">block</span>Ban
@@ -349,25 +354,34 @@
             <span class="material-symbols-rounded" style="color:#D97706;">admin_panel_settings</span>
           </div>
           <div>
-            <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;">Staff Panel</h2>
-            <p style="font-size:12px;color:var(--muted);font-weight:600;">Manage players</p>
+            <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;">Cloudrend SMP Staff Panel</h2>
+            <p style="font-size:12px;color:var(--muted);font-weight:600;">Manage members signed up for Cloudrend SMP</p>
           </div>
           <button class="btn btn-outline" onclick="loadUsers()" style="margin-left:auto;">
             <span class="material-symbols-rounded" style="font-size:16px;">refresh</span>Refresh
           </button>
         </div>
 
-        <!-- Quick ban -->
+        <!-- Quick actions -->
         <div style="background:var(--error-bg);border-radius:14px;padding:16px 18px;margin-bottom:20px;">
           <p style="font-size:12px;font-weight:800;color:var(--error);margin-bottom:10px;display:flex;align-items:center;gap:4px;">
-            <span class="material-symbols-rounded" style="font-size:16px;">gavel</span>Quick Ban
+            <span class="material-symbols-rounded" style="font-size:16px;">gavel</span>Quick Actions
           </p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <input class="input" id="ban-u" placeholder="Username" style="flex:1;min-width:120px;" />
-            <input class="input" id="ban-r" placeholder="Reason (optional)" style="flex:2;min-width:180px;" />
-            <button class="btn btn-danger" onclick="adminBan()" style="padding:10px 16px;border-radius:10px;font-size:13px;">
-              <span class="material-symbols-rounded" style="font-size:16px;">block</span>Ban
-            </button>
+          <div style="display:grid;gap:12px;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <input class="input" id="ban-u" placeholder="Username" style="flex:1;min-width:120px;" />
+              <input class="input" id="ban-r" placeholder="Reason (optional)" style="flex:2;min-width:180px;" />
+              <button class="btn btn-danger" onclick="adminBan()" style="padding:10px 16px;border-radius:10px;font-size:13px;">
+                <span class="material-symbols-rounded" style="font-size:16px;">block</span>Ban
+              </button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <input class="input" id="warn-u" placeholder="Username" style="flex:1;min-width:120px;" />
+              <input class="input" id="warn-r" placeholder="Warning note (optional)" style="flex:2;min-width:180px;" />
+              <button class="btn btn-warning" onclick="adminWarn()" style="padding:10px 16px;border-radius:10px;font-size:13px;background:#FEF3C7;color:#B45309;border:1px solid rgba(180,83,9,0.24);">
+                <span class="material-symbols-rounded" style="font-size:16px;">warning</span>Warn
+              </button>
+            </div>
           </div>
         </div>
 
@@ -523,7 +537,7 @@
     return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
-  function renderMessage(msg, prepend = false) {
+  function renderMessage(msg, prepend = false, isLocal = false) {
     const box = document.getElementById('messages');
     const loading = document.getElementById('chat-loading');
     if (loading) loading.remove();
@@ -532,8 +546,11 @@
     const continued = !prepend && msg.username === lastMsgUser && timeDiff < 300;
 
     const row = document.createElement('div');
-    row.className = `msg-row${continued ? ' continued' : ''}`;
+    row.className = `msg-row${isLocal ? ' local-message' : ''}${continued ? ' continued' : ''}`;
     row.dataset.username = msg.username;
+    row.dataset.content = msg.content;
+    row.dataset.createdAt = msg.created_at;
+    if (isLocal) row.dataset.local = '1';
 
     row.innerHTML = `
       <div class="msg-avatar-slot">
@@ -556,6 +573,16 @@
       lastMsgUser = msg.username;
       lastMsgTime = msg.created_at;
     }
+  }
+
+  function findLocalPendingMessage(username, content) {
+    const rows = document.querySelectorAll('#messages .msg-row.local-message');
+    for (const row of rows) {
+      if (row.dataset.username === username && row.dataset.content === content) {
+        return row;
+      }
+    }
+    return null;
   }
 
   async function loadMessages() {
@@ -585,8 +612,24 @@
     document.getElementById('chat-char').textContent = '0/500';
     try {
       const res = await fetch('/api/chat', { method: 'POST', headers: authHeader(), body: JSON.stringify({ content }) });
-      if (!res.ok) { const d = await res.json(); showToast(d.error || 'Failed to send.', 'error', true); }
-    } catch { showToast('Network error.', 'wifi_off', true); }
+      if (!res.ok) {
+        const d = await res.json();
+        showToast(d.error || 'Failed to send.', 'error', true);
+        return;
+      }
+      const data = await res.json().catch(() => null);
+      renderMessage({
+        username: ME?.username || 'You',
+        avatar_url: ME?.avatar_url,
+        content,
+        created_at: data?.created_at || new Date().toISOString(),
+        source: 'web'
+      }, false, true);
+      const box = document.getElementById('messages');
+      box.scrollTop = box.scrollHeight;
+    } catch {
+      showToast('Network error.', 'wifi_off', true);
+    }
   }
 
   function initChat() {
@@ -602,6 +645,18 @@
       ch.bind('new-message', (msg) => {
         const box = document.getElementById('messages');
         const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+        if (msg.username === ME?.username) {
+          const pending = findLocalPendingMessage(msg.username, msg.content);
+          if (pending) {
+            pending.dataset.local = '';
+            pending.classList.remove('local-message');
+            pending.dataset.createdAt = msg.created_at;
+            const timeEl = pending.querySelector('.msg-time');
+            if (timeEl) timeEl.textContent = formatTime(msg.created_at);
+            if (atBottom) box.scrollTop = box.scrollHeight;
+            return;
+          }
+        }
         renderMessage(msg);
         if (atBottom) box.scrollTop = box.scrollHeight;
       });
@@ -739,6 +794,15 @@
       .catch(e => showToast(e.message, 'error', true));
   }
 
+  function popWarn() {
+    document.getElementById('profile-popover').style.display = 'none';
+    const reason = prompt(`Warning note for ${popoverTarget}:`);
+    if (reason === null) return;
+    adminFetch('warn', 'POST', { username: popoverTarget, reason: reason || undefined })
+      .then(d => { showToast(d.message, 'warning'); loadUsers(); })
+      .catch(e => showToast(e.message, 'error', true));
+  }
+
   function popDelete() {
     document.getElementById('profile-popover').style.display = 'none';
     if (!confirm(`Permanently delete "${popoverTarget}"?`)) return;
@@ -804,7 +868,7 @@
     table.innerHTML = `<div style="padding:20px;text-align:center;"><div class="spinner" style="width:24px;height:24px;border:3px solid var(--primary-light);border-top-color:var(--primary);margin:0 auto;"></div></div>`;
     try {
       const { users } = await adminFetch('users');
-      document.getElementById('user-count').textContent = `${users.length} players`;
+      document.getElementById('user-count').textContent = `${users.length} members`;
       if (!users.length) { table.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">No players yet.</div>`; return; }
       table.innerHTML = users.map(u => `
         <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
@@ -814,12 +878,14 @@
             ${u.ban_reason ? `<p style="font-size:11px;color:var(--error);">Reason: ${escHtml(u.ban_reason)}</p>` : ''}
           </div>
           <span class="role-chip role-${u.role}">${u.role}</span>
+          ${u.warning_count > 0 ? `<span class="warning-chip">${u.warning_count} warning${u.warning_count === 1 ? '' : 's'}</span>` : ''}
           <span class="role-chip ${u.status === 'banned' ? 'role-' : ''}" style="${u.status === 'active' ? 'background:#D1FAE5;color:#059669;' : 'background:var(--error-bg);color:var(--error);'}">${u.status}</span>
           ${roleRank(u.role) < roleRank(ME?.role) ? `
           <div style="display:flex;gap:4px;">
             <button onclick="openProfile(event,'${escHtml(u.username)}')" title="View profile" style="width:28px;height:28px;border-radius:6px;border:none;background:var(--primary-light);color:var(--primary);cursor:pointer;display:flex;align-items:center;justify-content:center;">
               <span class="material-symbols-rounded" style="font-size:15px;">person</span>
             </button>
+            <button onclick="quickWarnUser('${escHtml(u.username)}')" title="Warn user" style="width:28px;height:28px;border-radius:6px;border:none;background:#FEF3C7;color:#B45309;cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-rounded" style="font-size:15px;">warning</span></button>
             ${u.status === 'active'
               ? `<button onclick="quickBanUser('${escHtml(u.username)}')" style="width:28px;height:28px;border-radius:6px;border:none;background:var(--error-bg);color:var(--error);cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-rounded" style="font-size:15px;">block</span></button>`
               : `<button onclick="quickUnban('${escHtml(u.username)}')" style="width:28px;height:28px;border-radius:6px;border:none;background:#D1FAE5;color:#059669;cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-rounded" style="font-size:15px;">check_circle</span></button>`}
@@ -837,16 +903,49 @@
     catch(e) { showToast(e.message, 'error', true); }
   }
 
+  async function adminWarn() {
+    const username = document.getElementById('warn-u').value.trim();
+    const reason = document.getElementById('warn-r').value.trim();
+    if (!username) { showToast('Enter a username.', 'warning', true); return; }
+    try {
+      const d = await adminFetch('warn', 'POST', { username, reason: reason || undefined });
+      showToast(d.message, 'warning');
+      document.getElementById('warn-u').value = '';
+      document.getElementById('warn-r').value = '';
+      loadUsers();
+    } catch(e) { showToast(e.message, 'error', true); }
+  }
+
+  async function quickWarnUser(username) {
+    const reason = prompt(`Warning note for ${username}:`);
+    if (reason === null) return;
+    try {
+      const d = await adminFetch('warn', 'POST', { username, reason: reason || undefined });
+      showToast(d.message, 'warning');
+      loadUsers();
+    } catch(e) { showToast(e.message, 'error', true); }
+  }
+
   async function quickBanUser(username) {
     const reason = prompt(`Ban reason for ${username}:`);
     if (reason === null) return;
-    try { const d = await adminFetch('ban', 'POST', { username, reason: reason || undefined }); showToast(d.message, 'gavel'); loadUsers(); }
-    catch(e) { showToast(e.message, 'error', true); }
+    try {
+      const d = await adminFetch('ban', 'POST', { username, reason: reason || undefined });
+      showToast(d.message, 'gavel');
+      loadUsers();
+    } catch(e) {
+      showToast(e.message, 'error', true);
+    }
   }
 
   async function quickUnban(username) {
-    try { const d = await adminFetch('unban', 'POST', { username }); showToast(d.message, 'check_circle'); loadUsers(); }
-    catch(e) { showToast(e.message, 'error', true); }
+    try {
+      const d = await adminFetch('unban', 'POST', { username });
+      showToast(d.message, 'check_circle');
+      loadUsers();
+    } catch(e) {
+      showToast(e.message, 'error', true);
+    }
   }
 
   async function quickDelete(username) {
