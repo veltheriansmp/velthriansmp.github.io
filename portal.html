@@ -112,6 +112,8 @@
     @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     .popover-banner { height: 60px; background: linear-gradient(135deg, #7C3AED, #A78BFA); }
     .popover-body { padding: 0 16px 16px; }
+    .popover-loading { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(255,255,255,0.95); color: var(--muted); font-size: 13px; font-weight: 800; pointer-events: none; }
+    .avatar-placeholder { width: 52px; height: 52px; border-radius: 50%; background: rgba(124,58,237,0.12); border: 3px solid #fff; box-sizing: border-box; }
 
     /* Modal */
     .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; align-items: center; justify-content: center; }
@@ -189,6 +191,7 @@
   </div>
   <div class="popover-body">
     <p id="pop-bio" style="font-size:13px;color:var(--muted);margin:8px 0 12px;min-height:18px;"></p>
+    <div id="pop-loading" class="popover-loading">Loading profile…</div>
     <div id="pop-staff-actions" style="display:none;border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:6px;">
       <p style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">Staff Actions</p>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
@@ -397,6 +400,7 @@
   // ============================
   let ME = null;
   let popoverTarget = null;
+  let profileRequestId = 0;
 
   // ============================
   // UTILS
@@ -663,6 +667,12 @@
     e.stopPropagation();
     popoverTarget = username;
     const pop = document.getElementById('profile-popover');
+    const loadingOverlay = document.getElementById('pop-loading');
+    const nameEl = document.getElementById('pop-username');
+    const chip = document.getElementById('pop-role-chip');
+    const bioEl = document.getElementById('pop-bio');
+    const wrap = document.getElementById('pop-avatar-wrap');
+    const actions = document.getElementById('pop-staff-actions');
 
     // Position near click
     const x = Math.min(e.clientX + 10, window.innerWidth - 300);
@@ -671,29 +681,48 @@
     pop.style.top = y + 'px';
     pop.style.display = 'block';
 
-    // Fetch profile
+    // Reset UI while loading
+    loadingOverlay.style.display = 'flex';
+    nameEl.textContent = username;
+    chip.textContent = '';
+    chip.className = 'role-chip';
+    bioEl.textContent = 'Loading profile...';
+    wrap.innerHTML = '<div class="avatar-placeholder"></div>';
+    actions.style.display = 'none';
+
+    const requestId = ++profileRequestId;
+
     fetch(`/api/profile?username=${encodeURIComponent(username)}`, { headers: authHeader() })
-      .then(r => r.json())
+      .then(async (r) => {
+        if (!r.ok) throw new Error('Profile fetch failed');
+        return r.json();
+      })
       .then(u => {
-        document.getElementById('pop-username').textContent = u.username;
-        const chip = document.getElementById('pop-role-chip');
-        chip.textContent = u.role;
-        chip.className = `role-chip role-${u.role}`;
-        document.getElementById('pop-bio').textContent = u.bio || '';
-
-        // Avatar
-        const wrap = document.getElementById('pop-avatar-wrap');
+        if (requestId !== profileRequestId) return;
+        loadingOverlay.style.display = 'none';
+        nameEl.textContent = u.username;
+        chip.textContent = u.role || 'Member';
+        chip.className = `role-chip role-${u.role || 'member'}`;
+        bioEl.textContent = u.bio || '';
         wrap.innerHTML = makeAvatar(u.username, u.avatar_url, 52);
-        wrap.querySelector('img,div').style.border = '3px solid #fff';
+        const avatarInner = wrap.querySelector('img,div');
+        if (avatarInner) avatarInner.style.border = '3px solid #fff';
 
-        // Staff actions — show if I'm staff and target is lower rank
-        const actions = document.getElementById('pop-staff-actions');
         if (isStaff(ME?.role) && roleRank(u.role) < roleRank(ME?.role) && u.username !== ME?.username) {
           actions.style.display = 'flex';
         } else {
           actions.style.display = 'none';
         }
-      }).catch(() => {});
+      }).catch(() => {
+        if (requestId !== profileRequestId) return;
+        loadingOverlay.style.display = 'none';
+        nameEl.textContent = username;
+        chip.textContent = '';
+        chip.className = 'role-chip';
+        bioEl.textContent = 'Unable to load profile.';
+        wrap.innerHTML = '<div class="avatar-placeholder"></div>';
+        actions.style.display = 'none';
+      });
   }
 
   document.addEventListener('click', (e) => {
