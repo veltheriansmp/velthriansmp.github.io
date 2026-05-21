@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cloudrend SMP — Portal Maintenance</title>
+  <title>Cloudrend SMP — Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@700&display=swap" rel="stylesheet" />
+  <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
   <style>
     :root {
-      --primary:        #6750A4;
+      --primary:       #6750A4;
       --primary-cont:  #EADDFF;
       --on-primary-cont: #21005D;
       --secondary:     #625B71;
@@ -22,7 +23,14 @@
       --error-cont:    #F9DEDC;
       --on-error-cont: #410E0B;
       --shadow:        0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
-      --shadow-md:     0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-md:     0 2px 8px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.08);
+
+      --owner-c:#F59E0B;  --owner-bg:#FEF3C7;
+      --admin-c:#6750A4;  --admin-bg:#EADDFF;
+      --mod-c:#2563EB;    --mod-bg:#DBEAFE;
+      --dev-c:#059669;    --dev-bg:#D1FAE5;
+      --build-c:#D97706;  --build-bg:#FEF3C7;
+      --mem-c:#6B7280;    --mem-bg:#F3F4F6;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,213 +40,899 @@
       background: var(--surface);
       color: var(--on-surface);
       height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      overflow: hidden;
     }
 
-    /* ── MD3 Cards ── */
-    .md-card {
-      background: #fff;
-      border-radius: 28px;
-      border: 1px solid var(--outline-var);
-      box-shadow: var(--shadow-md);
-      max-width: 500px;
-      width: 100%;
-      overflow: hidden;
-      transition: transform 0.3s ease;
-    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--outline-var); border-radius: 99px; }
 
-    .card-header {
-      background: linear-gradient(135deg, #EDE7F6 0%, #D1C4E9 100%);
-      padding: 32px 24px 24px;
-      text-align: center;
-    }
-
-    .maintenance-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 20px;
-      background: var(--primary);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      margin: 0 auto 16px;
-      box-shadow: 0 4px 12px rgba(103, 80, 164, 0.3);
-    }
-
-    .card-title {
-      font-family: 'Google Sans Display', sans-serif;
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--on-primary-cont);
-      margin-bottom: 8px;
-    }
-
-    .card-subtitle {
-      font-size: 13px;
-      color: var(--on-surface-var);
-      font-weight: 500;
-      letter-spacing: 0.2px;
-    }
-
-    .card-body {
-      padding: 24px;
-    }
-
-    .info-paragraph {
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--on-surface-var);
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    /* ── Status Rows ── */
-    .status-box {
-      background: var(--surface-var);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 24px;
-    }
-
-    .status-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .status-row:last-child {
-      border-bottom: none;
-    }
-
-    .status-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--on-surface-var);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    /* ── Chips ── */
+    /* ── Role chips ── */
     .chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 12px;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
+      display: inline-flex; align-items: center;
+      padding: 2px 9px; border-radius: 100px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase;
     }
-    .chip-warning { background: #FEF3C7; color: #D97706; }
-    .chip-success { background: #D1FAE5; color: #059669; }
-    .chip-info    { background: #DBEAFE; color: #2563EB; }
+    .chip-owner     { background: var(--owner-bg);  color: var(--owner-c); }
+    .chip-admin     { background: var(--admin-bg);  color: var(--admin-c); }
+    .chip-mod       { background: var(--mod-bg);    color: var(--mod-c); }
+    .chip-developer { background: var(--dev-bg);    color: var(--dev-c); }
+    .chip-builder   { background: var(--build-bg);  color: var(--build-c); }
+    .chip-member    { background: var(--mem-bg);    color: var(--mem-c); }
+    .chip-banned    { background: var(--error-cont);color: var(--error); }
+    .chip-active    { background: #D1FAE5; color: #059669; }
+    .chip-online    { background: #D1FAE5; color: #059669; }
+    .chip-offline   { background: var(--mem-bg);    color: var(--mem-c); }
 
-    /* ── Progress Indicators ── */
-    .progress-bar-container {
-      width: 100%;
-      height: 4px;
-      background: var(--outline-var);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-bottom: 12px;
+    /* ── Buttons ── */
+    .btn {
+      border: none; border-radius: 100px;
+      font-family: 'Google Sans', sans-serif; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.15s; font-size: 13px; padding: 8px 18px;
+    }
+    .btn-filled { background: var(--primary); color: #fff; }
+    .btn-filled:hover { filter: brightness(1.08); }
+    .btn-filled.danger { background: var(--error); }
+    .btn-outlined { background: transparent; color: var(--primary); border: 1.5px solid var(--outline); }
+    .btn-outlined:hover { background: rgba(103,80,164,0.06); }
+    .btn-tonal { background: var(--primary-cont); color: var(--on-primary-cont); }
+    .btn-tonal:hover { filter: brightness(0.96); }
+    .btn-icon { width: 30px; height: 30px; padding: 0; justify-content: center; border-radius: 8px; }
+    .btn-icon.danger-icon { background: var(--error-cont); color: var(--error); }
+    .btn-icon.unban-icon  { background: #D1FAE5; color: #059669; }
+    .btn-icon.del-icon    { background: var(--surface-var); color: var(--on-surface-var); }
+    .btn-icon.prof-icon   { background: var(--primary-cont); color: var(--primary); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ── Input ── */
+    .input {
+      width: 100%; border: 1.5px solid var(--outline);
+      border-radius: 10px; padding: 10px 12px;
+      font-family: 'Google Sans', sans-serif; font-size: 14px;
+      color: var(--on-surface); background: var(--surface-var);
+      outline: none; transition: border-color 0.15s, background 0.15s;
+    }
+    .input:focus { border-color: var(--primary); background: #fff; }
+    .input::placeholder { color: var(--outline); }
+    textarea.input { resize: vertical; min-height: 80px; }
+    select.input { cursor: pointer; }
+
+    /* ── MD3 Card ── */
+    .md-card {
+      background: #fff; border-radius: 16px;
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .md-card-outlined {
+      background: #fff; border-radius: 16px;
+      border: 1px solid var(--outline-var);
     }
 
-    .progress-bar {
-      height: 100%;
-      background: var(--primary);
-      width: 45%;
-      border-radius: 2px;
-      animation: progress-indefinite 2s infinite ease-in-out;
+    /* ── Navbar ── */
+    #navbar {
+      height: 60px; background: #fff;
+      border-bottom: 1px solid var(--surface-var);
+      display: none; align-items: center;
+      padding: 0 20px; gap: 12px;
+      flex-shrink: 0; z-index: 50;
+      box-shadow: var(--shadow);
+    }
+    .nav-logo {
+      font-family: 'Google Sans Display', 'Google Sans', sans-serif;
+      font-size: 18px; font-weight: 700; color: var(--primary);
+    }
+    .nav-tabs {
+      display: flex; gap: 2px;
+      background: var(--surface-var); border-radius: 100px; padding: 3px;
+    }
+    .nav-tab {
+      padding: 5px 16px; border-radius: 100px;
+      font-size: 13px; font-weight: 700;
+      cursor: pointer; border: none; background: transparent;
+      color: var(--on-surface-var); transition: all 0.15s;
+      font-family: 'Google Sans', sans-serif;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .nav-tab.active { background: var(--primary-cont); color: var(--primary); }
+    .nav-tab:hover:not(.active) { color: var(--on-surface); }
+
+    /* ── Layout ── */
+    #layout { display: none; flex: 1; overflow: hidden; }
+
+    /* Sidebar */
+    #sidebar {
+      width: 200px; flex-shrink: 0;
+      background: var(--surface-var);
+      border-right: 1px solid var(--outline-var);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .sidebar-label {
+      font-size: 10px; font-weight: 700; color: var(--on-surface-var);
+      text-transform: uppercase; letter-spacing: 0.6px;
+      padding: 12px 12px 5px;
+    }
+    #sidebar-players { flex: 1; overflow-y: auto; padding: 0 6px 8px; }
+    .player-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 8px; border-radius: 100px; cursor: pointer;
+      transition: background 0.12s;
+    }
+    .player-row:hover { background: var(--primary-cont); }
+    .player-name { font-size: 12px; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .online-dot { width: 7px; height: 7px; border-radius: 50%; background: #059669; flex-shrink: 0; }
+
+    #sidebar-status {
+      padding: 10px 12px 14px;
+      border-top: 1px solid var(--outline-var);
+    }
+    .stat-line { display: flex; align-items: center; justify-content: space-between; padding: 3px 0; }
+    .stat-lbl { font-size: 11px; color: var(--on-surface-var); font-weight: 600; }
+    .stat-val { font-size: 11px; font-weight: 700; color: var(--on-surface); }
+
+    /* Main */
+    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .panel { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+    .panel.active { display: flex; }
+
+    /* Chat */
+    #chat-header {
+      padding: 12px 18px; border-bottom: 1px solid var(--surface-var);
+      background: #fff; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    #messages { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 1px; }
+    .msg { display: flex; gap: 10px; padding: 3px 6px; border-radius: 8px; transition: background 0.1s; }
+    .msg:hover { background: rgba(103,80,164,0.04); }
+    .msg.cont .msg-av { visibility: hidden; }
+    .msg-av { width: 32px; flex-shrink: 0; padding-top: 2px; }
+    .msg-body { flex: 1; min-width: 0; }
+    .msg-meta { display: flex; align-items: baseline; gap: 6px; margin-bottom: 1px; }
+    .msg-name { font-size: 13px; font-weight: 700; cursor: pointer; }
+    .msg-name:hover { text-decoration: underline; }
+    .msg-time { font-size: 11px; color: var(--outline); }
+    .msg-text { font-size: 13px; line-height: 1.5; color: var(--on-surface); word-break: break-word; }
+    .src-badge { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 100px; }
+    .src-web  { background: var(--primary-cont); color: var(--primary); }
+    .src-discord { background: #EEF2FF; color: #5865F2; }
+    .src-minecraft { background: #D1FAE5; color: #059669; }
+
+    #chat-input-area {
+      padding: 10px 14px; background: #fff;
+      border-top: 1px solid var(--surface-var); flex-shrink: 0;
+    }
+    .chat-wrap {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface-var); border: 1.5px solid var(--outline-var);
+      border-radius: 100px; padding: 6px 6px 6px 14px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .chat-wrap:focus-within { border-color: var(--primary); background: #fff; }
+    .chat-wrap input {
+      flex: 1; border: none; background: transparent;
+      font-family: 'Google Sans', sans-serif; font-size: 13px;
+      color: var(--on-surface); outline: none;
+    }
+    .chat-wrap input::placeholder { color: var(--outline); }
+    .chat-char { font-size: 11px; color: var(--outline); white-space: nowrap; }
+    .send-btn {
+      width: 34px; height: 34px; border-radius: 100px;
+      background: var(--primary); border: none; color: #fff;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: filter 0.15s;
+    }
+    .send-btn:hover { filter: brightness(1.1); }
+
+    /* Staff panel */
+    #panel-staff { overflow-y: auto; }
+    .staff-inner { max-width: 800px; margin: 0 auto; padding: 24px 20px; display: flex; flex-direction: column; gap: 18px; }
+
+    .staff-header-card {
+      background: linear-gradient(135deg, #EDE7F6 0%, #D1C4E9 100%);
+      border-radius: 16px; padding: 20px 22px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .staff-header-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--primary); display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0; color: #fff;
     }
 
-    @keyframes progress-indefinite {
-      0% { margin-left: -45%; width: 45%; }
-      50% { margin-left: 30%; width: 65%; }
-      100% { margin-left: 100%; width: 45%; }
+    .staff-stat {
+      background: rgba(255,255,255,0.6); border-radius: 10px;
+      padding: 8px 14px; text-align: center;
+    }
+    .staff-stat .sv { font-size: 20px; font-weight: 700; color: var(--on-primary-cont); }
+    .staff-stat .sl { font-size: 9px; color: var(--on-surface-var); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    .staff-section { background: #fff; border-radius: 16px; border: 1px solid var(--outline-var); overflow: hidden; }
+    .staff-section-h {
+      padding: 12px 16px; border-bottom: 1px solid var(--surface-var);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .staff-section-h h3 { font-size: 14px; font-weight: 700; flex: 1; }
+
+    .user-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; border-bottom: 1px solid var(--surface-var);
+      transition: background 0.1s;
+    }
+    .user-row:last-child { border-bottom: none; }
+    .user-row:hover { background: rgba(103,80,164,0.03); }
+
+    /* Popover */
+    #popover {
+      display: none; position: fixed; z-index: 200; width: 270px;
+      background: #fff; border: 1px solid var(--outline-var);
+      border-radius: 16px; box-shadow: var(--shadow-md);
+      overflow: hidden; animation: popIn 0.15s ease;
+    }
+    @keyframes popIn { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:scale(1); } }
+    .pop-banner { height: 56px; background: linear-gradient(135deg, #EDE7F6, #D1C4E9); }
+    .pop-body { padding: 0 14px 14px; }
+    .pop-actions { border-top: 1px solid var(--surface-var); padding-top: 10px; margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
+
+    /* Modals */
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.32); z-index: 300; align-items: center; justify-content: center; }
+    .modal-bg.show { display: flex; }
+    .modal { background: #fff; border-radius: 20px; padding: 26px 24px; width: 100%; max-width: 400px; box-shadow: var(--shadow-md); animation: popIn 0.2s ease; }
+    .modal h3 { font-family: 'Google Sans Display','Google Sans',sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .modal label { display: block; font-size: 11px; font-weight: 700; color: var(--on-surface-var); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+    .modal .field { margin-bottom: 14px; }
+    .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+    /* Banned overlay */
+    #banned {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: var(--surface); align-items: center; justify-content: center;
+      flex-direction: column; padding: 24px; text-align: center;
+    }
+    #banned.show { display: flex; }
+    .banned-card {
+      background: var(--error-cont); border-radius: 24px;
+      padding: 36px 32px; max-width: 460px; width: 100%;
+      box-shadow: var(--shadow-md);
+    }
+    .banned-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #313033; padding: 12px 20px;
+      display: flex; align-items: center; justify-content: space-between;
     }
 
-    /* ── Console Style Block ── */
-    .console-block {
-      font-family: 'JetBrains Mono', monospace;
-      background: #1c1b1f;
-      color: #059669;
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 11px;
-      line-height: 1.5;
-      text-align: left;
-      overflow-x: auto;
-      border: 1px solid #27272a;
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%) translateY(70px);
+      background: #313033; color: #fff;
+      padding: 10px 18px; border-radius: 100px;
+      font-size: 13px; font-weight: 600; z-index: 1000;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      display: flex; align-items: center; gap: 7px; white-space: nowrap;
     }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.err { background: var(--error); }
 
-    .console-prefix {
-      color: #8b5cf6;
+    /* Loading */
+    #loading {
+      position: fixed; inset: 0; background: var(--surface); z-index: 500;
+      display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { border-radius: 50%; animation: spin 0.8s linear infinite; }
 
-    /* Footer logo/text */
-    .footer-stamp {
-      margin-top: 24px;
-      font-size: 11px;
-      color: var(--outline);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+    /* Avatar */
+    .av { border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .av-fb { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; color: #fff; }
+
+    .av-preview { display: none; align-items: center; gap: 10px; background: var(--surface-var); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
+
+    @media (max-width: 680px) { #sidebar { display: none; } }
   </style>
 </head>
 <body>
 
-  <div class="md-card">
-    <div class="card-header">
-      <div class="maintenance-icon">⚙️</div>
-      <h2 class="card-title">Portal Offline</h2>
-      <p class="card-subtitle">CLOUDREND SMP // INFRASTRUCTURE RESET</p>
+<!-- LOADING -->
+<div id="loading">
+  <div class="spinner" style="width:40px;height:40px;border:3px solid var(--primary-cont);border-top-color:var(--primary);"></div>
+  <p style="font-size:13px;font-weight:600;color:var(--on-surface-var);">Loading portal…</p>
+</div>
+
+<!-- BANNED -->
+<div id="banned">
+  <div class="banned-card">
+    <div style="width:64px;height:64px;border-radius:50%;background:var(--error);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;">🔨</div>
+    <h2 style="font-family:'Google Sans Display','Google Sans',sans-serif;font-size:22px;font-weight:700;color:var(--on-error-cont);margin-bottom:6px;">You are banned from the SMP</h2>
+    <p style="font-size:13px;color:var(--on-error-cont);opacity:0.7;margin-bottom:16px;">Seriously, what did you do. 7.7</p>
+    <div style="background:rgba(179,38,30,0.1);border-radius:10px;padding:10px 14px;margin-bottom:20px;text-align:left;">
+      <p style="font-size:11px;color:var(--on-error-cont);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;">Ban Reason</p>
+      <p id="ban-reason" style="font-size:13px;color:var(--error);font-weight:600;">—</p>
     </div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">
+      <button class="btn btn-outlined" style="border-color:var(--error);color:var(--error);" onclick="openAppeal()">📝 Submit Appeal</button>
+      <button class="btn btn-filled danger" onclick="logout()">Log out</button>
+    </div>
+    <p style="font-size:11px;color:var(--on-error-cont);opacity:0.6;">You have the right to appeal. Staff decisions are final unless overturned.</p>
+  </div>
+  <div class="banned-bar">
+    <span style="color:#fff;font-size:13px;font-weight:600;">🚫 Banned from Cloudrend SMP</span>
+    <span class="chip chip-banned">Account Suspended</span>
+  </div>
+</div>
 
-    <div class="card-body">
-      <p class="info-paragraph">
-        The user portal is temporarily offline while we configure and authorize the backend <strong>Discord OAuth2</strong> login pipelines. This ensures session tokens, auto-bans, and user sync processes function securely and automatically.
-      </p>
+<!-- APPEAL MODAL -->
+<div class="modal-bg" id="appeal-modal">
+  <div class="modal" style="max-width:440px;">
+    <div style="display:inline-flex;align-items:center;gap:6px;background:var(--error-cont);border-radius:100px;padding:3px 12px;font-size:11px;font-weight:700;color:var(--error);margin-bottom:12px;">📝 Ban Appeal</div>
+    <h3 style="margin-bottom:4px;">Submit an Appeal</h3>
+    <p style="font-size:13px;color:var(--on-surface-var);margin-bottom:18px;">Explain why your ban should be lifted. Be honest — staff can see your history.</p>
+    <div class="field"><label>Your Username</label><input class="input" id="appeal-username" readonly /></div>
+    <div class="field">
+      <label>Appeal Reason <span style="color:var(--error);">*</span></label>
+      <textarea class="input" id="appeal-text" placeholder="Explain what happened and why you should be unbanned…" maxlength="1000" oninput="$('appeal-count').textContent=this.value.length"></textarea>
+      <p style="font-size:11px;color:var(--outline);margin-top:4px;"><span id="appeal-count">0</span>/1000</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined" onclick="$('appeal-modal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-filled" id="appeal-btn" onclick="submitAppeal()">Send Appeal</button>
+    </div>
+  </div>
+</div>
 
-      <div class="progress-bar-container">
-        <div class="progress-bar"></div>
+<!-- TOAST -->
+<div id="toast"><span id="ti">✓</span><span id="tm"></span></div>
+
+<!-- PROFILE POPOVER -->
+<div id="popover">
+  <div class="pop-banner"></div>
+  <div class="pop-body">
+    <div style="display:flex;align-items:flex-end;gap:10px;margin-top:-22px;margin-bottom:8px;">
+      <div id="pop-av"></div>
+      <div style="padding-bottom:4px;">
+        <p id="pop-name" style="font-weight:700;font-size:15px;"></p>
+        <span id="pop-chip" class="chip"></span>
       </div>
+    </div>
+    <p id="pop-bio" style="font-size:12px;color:var(--on-surface-var);min-height:14px;margin-bottom:4px;"></p>
+    <div class="pop-actions" id="pop-actions" style="display:none;">
+      <p style="font-size:10px;font-weight:700;color:var(--on-surface-var);text-transform:uppercase;letter-spacing:0.5px;width:100%;margin-bottom:2px;">Staff Actions</p>
+      <button class="btn btn-tonal" style="font-size:12px;padding:5px 10px;" onclick="popSetRole()">🎭 Set Role</button>
+      <button class="btn btn-outlined" style="font-size:12px;padding:5px 10px;color:var(--error);border-color:var(--error);" onclick="popBan()">🔨 Ban</button>
+      <button class="btn btn-filled danger" style="font-size:12px;padding:5px 10px;" onclick="popDelete()">🗑 Delete</button>
+    </div>
+  </div>
+</div>
 
-      <div class="status-box">
-        <div class="status-row">
-          <span class="status-label">Database Cluster</span>
-          <span class="chip chip-success">Online</span>
-        </div>
-        <div class="status-row">
-          <span class="status-label">Discord API Sync</span>
-          <span class="chip chip-warning">In Progress</span>
-        </div>
-        <div class="status-row">
-          <span class="status-label">Authorization Token Layer</span>
-          <span class="chip chip-info">Hardening</span>
-        </div>
-      </div>
+<!-- SET ROLE MODAL -->
+<div class="modal-bg" id="role-modal">
+  <div class="modal">
+    <h3>Set Role</h3>
+    <p id="role-target-label" style="font-size:13px;color:var(--on-surface-var);margin-bottom:16px;"></p>
+    <div class="field"><label>New Role</label>
+      <select class="input" id="role-select">
+        <option value="member">member</option>
+        <option value="builder">builder</option>
+        <option value="developer">developer</option>
+        <option value="mod">mod</option>
+        <option value="admin">admin</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined" onclick="$('role-modal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-filled" onclick="confirmRole()">Confirm</button>
+    </div>
+  </div>
+</div>
 
-      <div class="console-block">
-        <span class="console-prefix">orchid-arch-os$</span> node verify_oauth_state.js<br />
-        <span style="color: #fbbf24;">[WARNING] oauth_state cookie token unmatched. Redirecting...</span><br />
-        <span style="color: #34d399;">[INFO] System entering cold recovery mode. Login blocked.</span>
+<!-- EDIT PROFILE MODAL -->
+<div class="modal-bg" id="edit-modal">
+  <div class="modal">
+    <h3>Edit Profile</h3>
+    <div class="av-preview" id="edit-av-preview">
+      <img id="edit-av-img" src="" width="40" height="40" style="border-radius:50%;object-fit:cover;" />
+      <span style="font-size:13px;font-weight:600;color:var(--on-surface-var);">Preview</span>
+    </div>
+    <div class="field"><label>Avatar URL</label><input class="input" id="edit-avatar" placeholder="https://i.imgur.com/…" oninput="previewAvatar()" /></div>
+    <div class="field"><label>Bio <span style="font-weight:400;text-transform:none;">(max 100)</span></label><input class="input" id="edit-bio" placeholder="Something about yourself…" maxlength="100" /></div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined" onclick="$('edit-modal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-filled" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <span class="nav-logo">Cloudrend SMP</span>
+  <div style="flex:1;"></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tab-chat" onclick="switchPanel('chat')">💬 Chat</button>
+    <button class="nav-tab" id="tab-staff" onclick="switchPanel('staff')" style="display:none;">🛡 Staff</button>
+  </div>
+  <div style="flex:1;"></div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div id="nav-av" style="cursor:pointer;" onclick="openEdit()"></div>
+    <div style="cursor:pointer;line-height:1.2;" onclick="openEdit()">
+      <p id="nav-name" style="font-size:13px;font-weight:700;"></p>
+      <span id="nav-chip" class="chip"></span>
+    </div>
+    <button class="btn btn-outlined" onclick="logout()" style="padding:6px 14px;font-size:12px;margin-left:4px;">Logout</button>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div id="layout">
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <p class="sidebar-label">Online Players</p>
+    <div id="sidebar-players"><p style="padding:8px 12px;font-size:12px;color:var(--on-surface-var);">Loading…</p></div>
+    <div id="sidebar-status">
+      <p class="sidebar-label" style="padding-top:0;margin-bottom:5px;">Server</p>
+      <div class="stat-line"><span class="stat-lbl">Status</span><span id="ss-chip" class="chip">—</span></div>
+      <div class="stat-line"><span class="stat-lbl">Players</span><span id="ss-players" class="stat-val">—</span></div>
+      <div class="stat-line"><span class="stat-lbl">Version</span><span id="ss-ver" class="stat-val">—</span></div>
+      <div style="margin-top:8px;background:var(--primary-cont);border-radius:8px;padding:6px 8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="copyIP()">
+        <span style="font-size:10px;color:var(--primary);font-weight:700;">cloudrend.playsmp.xyz</span>
+        <span style="font-size:11px;color:var(--primary);">⎘</span>
       </div>
     </div>
   </div>
 
-  <div class="footer-stamp">
-    Powered by Arch // Est. May 2026
-  </div>
+  <!-- Main -->
+  <div id="main">
 
+    <!-- CHAT -->
+    <div class="panel active" id="panel-chat">
+      <div id="chat-header">
+        <span style="font-size:18px;">💬</span>
+        <span style="font-weight:700;font-size:15px;">Global Chat</span>
+        <div style="margin-left:auto;display:flex;gap:4px;">
+          <span class="src-badge src-web">Web</span>
+          <span class="src-badge src-discord">Discord</span>
+          <span class="src-badge src-minecraft">MC</span>
+        </div>
+      </div>
+      <div id="messages">
+        <div id="chat-load" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px;padding:40px;color:var(--on-surface-var);">
+          <div class="spinner" style="width:28px;height:28px;border:3px solid var(--primary-cont);border-top-color:var(--primary);"></div>
+          <p style="font-size:13px;font-weight:600;">Loading messages…</p>
+        </div>
+      </div>
+      <div id="chat-input-area">
+        <div class="chat-wrap">
+          <input type="text" id="chat-input" placeholder="Message… (try !ffa or !main)" maxlength="500"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"
+            oninput="$('chat-char').textContent=this.value.length+'/500'" />
+          <span id="chat-char" class="chat-char">0/500</span>
+          <button class="send-btn" onclick="sendMsg()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAFF PANEL -->
+    <div class="panel" id="panel-staff" style="overflow-y:auto;">
+      <div class="staff-inner">
+
+        <!-- Header -->
+        <div class="staff-header-card">
+          <div class="staff-header-icon">🛡</div>
+          <div style="flex:1;">
+            <h2 style="font-family:'Google Sans Display','Google Sans',sans-serif;font-size:18px;font-weight:700;color:var(--on-primary-cont);margin-bottom:2px;">Staff Panel</h2>
+            <p style="font-size:12px;color:var(--on-surface-var);">Logged in as <span id="staff-whoami" style="color:var(--primary);font-weight:700;"></span></p>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <div class="staff-stat"><div class="sv" id="stat-total">—</div><div class="sl">Players</div></div>
+            <div class="staff-stat"><div class="sv" id="stat-banned" style="color:var(--error);">—</div><div class="sl">Banned</div></div>
+            <div class="staff-stat"><div class="sv" id="stat-staff" style="color:var(--primary);">—</div><div class="sl">Staff</div></div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="staff-section">
+            <div class="staff-section-h" style="background:#FFF5F5;border-bottom-color:#FCE4EC;">
+              <span>🔨</span><h3 style="color:var(--error);">Quick Ban</h3>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+              <input class="input" id="ban-u" placeholder="Username" />
+              <input class="input" id="ban-r" placeholder="Reason (optional)" />
+              <button class="btn btn-filled danger" onclick="adminBan()" style="justify-content:center;">🔨 Ban Player</button>
+            </div>
+          </div>
+          <div class="staff-section">
+            <div class="staff-section-h" style="background:#F5F3FF;border-bottom-color:var(--primary-cont);">
+              <span>🎭</span><h3 style="color:var(--primary);">Quick Role</h3>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+              <input class="input" id="qrole-u" placeholder="Username" />
+              <select class="input" id="qrole-r">
+                <option value="member">member</option><option value="builder">builder</option>
+                <option value="developer">developer</option><option value="mod">mod</option><option value="admin">admin</option>
+              </select>
+              <button class="btn btn-filled" onclick="quickRoleAssign()" style="justify-content:center;">🎭 Set Role</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search + filter -->
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input class="input" id="search-u" placeholder="🔍  Search players…" oninput="filterTable()" style="flex:1;" />
+          <select class="input" id="filter-role" onchange="filterTable()" style="width:130px;">
+            <option value="">All Roles</option>
+            <option value="owner">owner</option><option value="admin">admin</option>
+            <option value="mod">mod</option><option value="developer">developer</option>
+            <option value="builder">builder</option><option value="member">member</option>
+          </select>
+          <select class="input" id="filter-status" onchange="filterTable()" style="width:120px;">
+            <option value="">All Status</option>
+            <option value="active">active</option><option value="banned">banned</option>
+          </select>
+          <button class="btn btn-tonal" onclick="loadUsers()" style="flex-shrink:0;padding:8px 14px;">↻</button>
+        </div>
+
+        <!-- User table -->
+        <div class="staff-section">
+          <div class="staff-section-h">
+            <span>👥</span><h3>All Players</h3>
+            <span id="user-count" style="font-size:12px;color:var(--on-surface-var);margin-left:auto;font-weight:600;"></span>
+          </div>
+          <div id="user-table"><p style="padding:24px;text-align:center;font-size:13px;color:var(--on-surface-var);">Loading players…</p></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const PUSHER_KEY     = 'YOUR_PUSHER_KEY';
+  const PUSHER_CLUSTER = 'ap1';
+  const SERVER_HOST    = 'cloudrend.playsmp.xyz';
+  const ROLE_RANK      = { member:0, builder:1, developer:2, mod:3, admin:4, owner:5 };
+  const STAFF_ROLES    = ['mod','admin','owner'];
+  const COMMANDS = {
+    '!ffa':  '⚔️ FFA Server IP: pvptier.netherite.top — click to copy!',
+    '!main': '🏠 Main Server IP: cloudrend.playsmp.xyz — click to copy!',
+  };
+
+  let ME = null, POP_TARGET = null, ALL_USERS = [], lastMsgId = 0, pollTimer = null;
+  let lastUser = null, lastTime = null;
+
+  const $ = id => document.getElementById(id);
+  const isStaff = r => STAFF_ROLES.includes(r);
+  const rank = r => ROLE_RANK[r] ?? 0;
+  const token = () => localStorage.getItem('smp_token');
+  const ah = () => ({ 'Authorization': `Bearer ${token()}`, 'Content-Type': 'application/json' });
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  function toast(msg, icon='✓', err=false) {
+    const t=$('toast'); $('tm').textContent=msg; $('ti').textContent=icon;
+    t.className=err?'err show':'show';
+    clearTimeout(t._t); t._t=setTimeout(()=>t.className=err?'err':'',3200);
+  }
+  function logout() { localStorage.clear(); window.location.href='/'; }
+  function copyIP() { navigator.clipboard.writeText(SERVER_HOST); toast('Server IP copied!','⎘'); }
+
+  const AV_COLORS = ['#6750A4','#2563EB','#059669','#D97706','#DC2626','#0891B2'];
+  function avColor(u) { let h=0; for(const c of u) h=(h*31+c.charCodeAt(0))%AV_COLORS.length; return AV_COLORS[h]; }
+  function avHTML(username, url, size=32) {
+    if (url) return `<img src="${esc(url)}" class="av" width="${size}" height="${size}" />`;
+    return `<div class="av-fb" style="width:${size}px;height:${size}px;font-size:${Math.round(size*.38)}px;background:${avColor(username)};">${username[0].toUpperCase()}</div>`;
+  }
+  function setAv(wrapId, username, url, size) { const el=$(wrapId); if(el) el.innerHTML=avHTML(username,url,size); }
+  function chipHTML(role) { return `<span class="chip chip-${role}">${role}</span>`; }
+
+  // ── Session ──
+  async function verifySession() {
+    try {
+      const res = await fetch('/api/me', { headers: { 'Authorization': `Bearer ${token()}` } });
+      // 403 = banned (new behaviour from hardened me.js)
+      if (res.status === 403) {
+        const d = await res.json();
+        return { banned: true, ban_reason: d.ban_reason };
+      }
+      if (!res.ok) return null;
+      return res.json();
+    } catch { return null; }
+  }
+
+  window.onload = async () => {
+    // ── Grab JWT from URL fragment if redirected from discord-callback ──
+    const hash = location.hash.slice(1);
+    const hashParams = new URLSearchParams(hash);
+    const fragToken = hashParams.get('token');
+    if (fragToken) {
+      localStorage.setItem('smp_token', fragToken);
+      history.replaceState(null, '', location.pathname);
+    }
+
+    if (!token()) { window.location.href='/auth.html'; return; }
+
+    const user = await verifySession();
+    if (!user) { localStorage.removeItem('smp_token'); window.location.href='/auth.html'; return; }
+
+    // Handle banned — me.js now returns 403 with banned:true
+    if (user.banned) {
+      $('loading').style.display='none';
+      $('ban-reason').textContent=user.ban_reason||'No reason provided.';
+      $('appeal-username').value='';
+      $('banned').classList.add('show');
+      return;
+    }
+
+    // MC username not linked yet
+    if (!user.mc_username) { window.location.href='/link-mc.html'; return; }
+
+    boot(user);
+  };
+
+  function boot(user) {
+    ME=user;
+    $('loading').style.display='none';
+    $('navbar').style.display='flex';
+    $('layout').style.display='flex';
+
+    // Display name: prefer MC username, fall back to Discord username
+    const displayName = user.mc_username ?? user.username;
+    $('nav-name').textContent=displayName;
+    $('nav-chip').textContent=user.role??'member';
+    $('nav-chip').className=`chip chip-${user.role??'member'}`;
+
+    // Avatar: prefer custom avatar_url, fall back to Discord avatar
+    const avatarUrl = user.avatar_url ?? user.discord_avatar ?? null;
+    setAv('nav-av', displayName, avatarUrl, 32);
+
+    if(isStaff(user.role)) $('tab-staff').style.display='';
+    initChat(); loadServerStatus(); loadOnlinePlayers();
+  }
+
+  // ── Panel switching ──
+  function switchPanel(p) {
+    ['chat','staff'].forEach(id=>{
+      $(`panel-${id}`).classList.toggle('active',id===p);
+      $(`tab-${id}`)?.classList.toggle('active',id===p);
+    });
+    if(p==='staff') loadUsers();
+  }
+
+  // ── Chat ──
+  function fmtTime(iso) { return new Date(iso).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+
+  function renderMsg(msg, prepend=false) {
+    const box=$('messages'); $('chat-load')?.remove();
+    const diff = lastTime ? (new Date(msg.created_at)-new Date(lastTime))/1000 : 999;
+    const cont = !prepend && msg.username===lastUser && diff<300;
+    const el=document.createElement('div');
+    el.className=`msg${cont?' cont':''}`;
+    el.dataset.u=msg.username;
+    if(msg.id){ el.dataset.msgid=msg.id; lastMsgId=Math.max(lastMsgId,msg.id); }
+    el.innerHTML=`
+      <div class="msg-av">${!cont?avHTML(msg.username,msg.avatar_url??null,32):''}</div>
+      <div class="msg-body">
+        ${!cont?`<div class="msg-meta">
+          <span class="msg-name" style="color:${avColor(msg.username)};" onclick="openPop(event,'${esc(msg.username)}')">${esc(msg.username)}</span>
+          <span class="src-badge src-${msg.source}">${msg.source}</span>
+          <span class="msg-time">${fmtTime(msg.created_at)}</span>
+        </div>`:''}
+        <p class="msg-text">${esc(msg.content)}</p>
+      </div>`;
+    if(prepend) box.prepend(el);
+    else { box.appendChild(el); lastUser=msg.username; lastTime=msg.created_at; }
+  }
+
+  async function loadMsgs() {
+    try {
+      const res=await fetch('/api/chat',{headers:ah()});
+      if(!res.ok) return;
+      const {messages}=await res.json();
+      const box=$('messages'); box.innerHTML=''; lastUser=null; lastTime=null;
+      if(!messages.length){
+        box.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px;padding:40px;color:var(--on-surface-var);"><span style="font-size:36px;opacity:0.3;">💬</span><p style="font-size:13px;font-weight:600;">No messages yet — say hi!</p></div>`;
+        return;
+      }
+      messages.forEach(m=>renderMsg(m));
+      if(messages.length) lastMsgId=messages[messages.length-1].id;
+      box.scrollTop=box.scrollHeight;
+    } catch { toast('Failed to load messages.','⚠',true); }
+  }
+
+  async function pollNewMsgs() {
+    try {
+      const res=await fetch('/api/chat',{headers:ah()});
+      if(!res.ok) return;
+      const {messages}=await res.json();
+      const newMsgs=messages.filter(m=>m.id>lastMsgId);
+      if(newMsgs.length){
+        const box=$('messages'), atBot=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+        newMsgs.forEach(m=>{ if(!document.querySelector(`[data-msgid="${m.id}"]`)) renderMsg(m); });
+        if(atBot) box.scrollTop=box.scrollHeight;
+      }
+    } catch {}
+    pollTimer=setTimeout(pollNewMsgs,3000);
+  }
+
+  async function sendMsg() {
+    const inp=$('chat-input'), content=inp.value.trim(); if(!content) return;
+    inp.value=''; $('chat-char').textContent='0/500';
+    const cmdText=COMMANDS[content.toLowerCase()];
+    const payload=cmdText?{content:cmdText}:{content};
+    try {
+      const res=await fetch('/api/chat',{method:'POST',headers:ah(),body:JSON.stringify(payload)});
+      if(!res.ok){const d=await res.json();toast(d.error||'Failed to send.','⚠',true);return;}
+      const {message}=await res.json();
+      if(message){ const box=$('messages'),atBot=box.scrollHeight-box.scrollTop-box.clientHeight<80; renderMsg(message); if(atBot) box.scrollTop=box.scrollHeight; }
+      if(cmdText&&content.toLowerCase()==='!ffa') navigator.clipboard.writeText('pvptier.netherite.top').catch(()=>{});
+      if(cmdText&&content.toLowerCase()==='!main') navigator.clipboard.writeText(SERVER_HOST).catch(()=>{});
+    } catch { toast('Network error.','⚠',true); }
+  }
+
+  function initChat() {
+    loadMsgs();
+    let pusherOk=false;
+    try {
+      if(PUSHER_KEY&&PUSHER_KEY!=='YOUR_PUSHER_KEY'){
+        const p=new Pusher(PUSHER_KEY,{cluster:PUSHER_CLUSTER});
+        p.subscribe('smp-chat').bind('new-message',msg=>{
+          if(document.querySelector(`[data-msgid="${msg.id}"]`)) return;
+          const box=$('messages'),atBot=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+          renderMsg(msg); if(atBot) box.scrollTop=box.scrollHeight;
+        });
+        p.connection.bind('connected',()=>{pusherOk=true;clearTimeout(pollTimer);});
+        setTimeout(()=>{if(!pusherOk) pollNewMsgs();},4000);
+      } else { pollNewMsgs(); }
+    } catch { pollNewMsgs(); }
+  }
+
+  // ── Server status ──
+  async function loadServerStatus() {
+    try {
+      const d=await fetch(`https://api.mcsrvstat.us/3/${SERVER_HOST}`).then(r=>r.json());
+      if(d.online){
+        $('ss-chip').textContent='Online'; $('ss-chip').className='chip chip-online';
+        $('ss-players').textContent=`${d.players?.online??0} / ${d.players?.max??'?'}`;
+        $('ss-ver').textContent=d.version??'?';
+      } else {
+        $('ss-chip').textContent='Offline'; $('ss-chip').className='chip chip-offline';
+        $('ss-players').textContent='0';
+      }
+    } catch {}
+    setTimeout(loadServerStatus,60000);
+  }
+
+  async function loadOnlinePlayers() {
+    try {
+      const d=await fetch(`https://api.mcsrvstat.us/3/${SERVER_HOST}`).then(r=>r.json());
+      const box=$('sidebar-players'), players=d.players?.list??[];
+      if(!d.online||!players.length){box.innerHTML=`<p style="padding:8px 12px;font-size:12px;color:var(--on-surface-var);">${!d.online?'Server offline':'List hidden'}</p>`;return;}
+      box.innerHTML=players.map(p=>{const n=p.name??p;return`<div class="player-row" onclick="openPop(event,'${esc(n)}')">${avHTML(n,null,24)}<span class="player-name">${esc(n)}</span><div class="online-dot"></div></div>`;}).join('');
+    } catch {}
+    setTimeout(loadOnlinePlayers,60000);
+  }
+
+  // ── Popover ──
+  function openPop(e,username) {
+    e.stopPropagation(); POP_TARGET=username;
+    const pop=$('popover');
+    const x=Math.min(e.clientX+10,window.innerWidth-290), y=Math.min(e.clientY+10,window.innerHeight-280);
+    pop.style.left=x+'px'; pop.style.top=y+'px'; pop.style.display='block';
+    fetch(`/api/profile?username=${encodeURIComponent(username)}`,{headers:ah()}).then(r=>r.json()).then(u=>{
+      $('pop-name').textContent=u.username;
+      $('pop-chip').textContent=u.role; $('pop-chip').className=`chip chip-${u.role}`;
+      $('pop-bio').textContent=u.bio||'';
+      $('pop-av').innerHTML=avHTML(u.username,u.avatar_url,48);
+      const actions=$('pop-actions');
+      if(isStaff(ME?.role)&&rank(u.role)<rank(ME?.role)&&u.username!==ME?.username) actions.style.display='flex';
+      else actions.style.display='none';
+    }).catch(()=>{});
+  }
+  document.addEventListener('click',e=>{if(!$('popover').contains(e.target)) $('popover').style.display='none';});
+  function popBan(){$('popover').style.display='none';const r=prompt(`Ban reason for ${POP_TARGET}:`);if(r===null)return;adminFetch('ban','POST',{username:POP_TARGET,reason:r||undefined}).then(d=>{toast(d.message,'🔨');loadUsers();}).catch(e=>toast(e.message,'⚠',true));}
+  function popDelete(){$('popover').style.display='none';if(!confirm(`Delete "${POP_TARGET}" permanently?`))return;adminFetch('delete','DELETE',{username:POP_TARGET}).then(d=>{toast(d.message,'🗑');loadUsers();}).catch(e=>toast(e.message,'⚠',true));}
+  function popSetRole(){$('popover').style.display='none';$('role-target-label').textContent=`Changing role for: ${POP_TARGET}`;$('role-modal').classList.add('show');}
+  async function confirmRole(){const role=$('role-select').value;$('role-modal').classList.remove('show');try{const d=await adminFetch('setrole','POST',{username:POP_TARGET,role});toast(d.message,'🎭');loadUsers();}catch(e){toast(e.message,'⚠',true);}}
+
+  // ── Edit profile ──
+  function openEdit(){
+    $('edit-avatar').value=ME?.avatar_url??'';
+    $('edit-bio').value=ME?.bio??'';
+    $('edit-av-preview').style.display='none';
+    // Show current avatar (discord or custom) as preview
+    const currentAv = ME?.avatar_url ?? ME?.discord_avatar ?? null;
+    if (currentAv) {
+      $('edit-av-img').src=currentAv;
+      $('edit-av-preview').style.display='flex';
+    }
+    $('edit-modal').classList.add('show');
+  }
+  function previewAvatar(){const url=$('edit-avatar').value.trim(),prev=$('edit-av-preview'),img=$('edit-av-img');if(url){img.src=url;img.onload=()=>{prev.style.display='flex';};img.onerror=()=>{prev.style.display='none';};}else prev.style.display='none';}
+  async function saveProfile(){
+    const avatar_url=$('edit-avatar').value.trim(),bio=$('edit-bio').value.trim();
+    try{
+      const res=await fetch('/api/profile',{method:'PATCH',headers:ah(),body:JSON.stringify({avatar_url:avatar_url||undefined,bio:bio||undefined})});
+      const d=await res.json();
+      if(!res.ok){toast(d.error,'⚠',true);return;}
+      ME={...ME,...d.user};
+      const displayName = ME.mc_username ?? ME.discord_username ?? ME.username;
+      const avatarUrl = ME.avatar_url ?? ME.discord_avatar ?? null;
+      setAv('nav-av', displayName, avatarUrl, 32);
+      toast('Profile updated!','✓');
+      $('edit-modal').classList.remove('show');
+    }catch{toast('Network error.','⚠',true);}
+  }
+
+  // ── Appeal ──
+  function openAppeal(){$('appeal-modal').classList.add('show');}
+  async function submitAppeal(){
+    const text=$('appeal-text').value.trim(),username=$('appeal-username').value;
+    if(!text){toast('Please write your appeal.','⚠',true);return;}
+    const btn=$('appeal-btn');btn._orig=btn.innerHTML;btn.innerHTML='…';btn.disabled=true;
+    try{const res=await fetch('/api/appeal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,reason:text})});const d=await res.json();if(!res.ok){toast(d.error||'Failed to send appeal.','⚠',true);return;}toast('Appeal submitted! Staff will review it.','📝');$('appeal-modal').classList.remove('show');$('appeal-text').value='';$('appeal-count').textContent='0';}catch{toast('Network error.','⚠',true);}
+    finally{btn.innerHTML=btn._orig;btn.disabled=false;}
+  }
+
+  // ── Admin ──
+  async function adminFetch(action,method='GET',body=null){const opts={method,headers:ah()};if(body)opts.body=JSON.stringify(body);const res=await fetch(`/api/admin?action=${action}`,opts);const d=await res.json();if(!res.ok)throw new Error(d.error||'Admin error');return d;}
+
+  async function loadUsers(){
+    const tbl=$('user-table');
+    tbl.innerHTML=`<div style="padding:20px;text-align:center;"><div class="spinner" style="width:22px;height:22px;border:3px solid var(--primary-cont);border-top-color:var(--primary);margin:0 auto;"></div></div>`;
+    try{
+      const{users}=await adminFetch('users');
+      ALL_USERS=users;
+      $('stat-total').textContent=users.length;
+      $('stat-banned').textContent=users.filter(u=>u.status==='banned').length;
+      $('stat-staff').textContent=users.filter(u=>isStaff(u.role)).length;
+      $('staff-whoami').textContent=ME?.mc_username ?? ME?.username ?? '';
+      renderUserTable(users);
+    }catch(e){tbl.innerHTML=`<p style="padding:16px;text-align:center;font-size:13px;color:var(--error);">${e.message}</p>`;}
+  }
+
+  function filterTable(){
+    const q=$('search-u').value.toLowerCase(),rol=$('filter-role').value,sta=$('filter-status').value;
+    renderUserTable(ALL_USERS.filter(u=>(!q||u.username.toLowerCase().includes(q))&&(!rol||u.role===rol)&&(!sta||u.status===sta)));
+  }
+
+  function renderUserTable(users){
+    const tbl=$('user-table');
+    $('user-count').textContent=`${users.length} player${users.length!==1?'s':''}`;
+    if(!users.length){tbl.innerHTML=`<p style="padding:24px;text-align:center;font-size:13px;color:var(--on-surface-var);">No players match.</p>`;return;}
+    tbl.innerHTML=users.map(u=>{
+      const displayName = u.mc_username ?? u.discord_username;
+      const avatarUrl = u.avatar_url ?? u.discord_avatar ?? null;
+      return `
+      <div class="user-row">
+        ${avHTML(displayName, avatarUrl, 32)}
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <p style="font-weight:700;font-size:13px;">${esc(displayName)}</p>
+            ${chipHTML(u.role)}
+          </div>
+          <p style="font-size:11px;color:var(--on-surface-var);margin-top:1px;">
+            ${u.mc_username ? `🎮 ${esc(u.mc_username)}` : '<span style="color:var(--outline);">MC not linked</span>'}
+            &nbsp;·&nbsp;
+            <span style="color:#5865F2;">⬡ ${esc(u.discord_username)}</span>
+          </p>
+          ${u.ban_reason?`<p style="font-size:11px;color:var(--error);margin-top:1px;">📌 ${esc(u.ban_reason)}</p>`:''}
+        </div>
+        <span class="chip ${u.status==='active'?'chip-active':'chip-banned'}">${u.status}</span>
+        ${rank(u.role)<rank(ME?.role)?`
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-icon prof-icon" onclick="openPop(event,'${esc(displayName)}')" title="Profile">👤</button>
+          ${u.status==='active'
+            ?`<button class="btn btn-icon danger-icon" onclick="quickBan('${esc(displayName)}')" title="Ban">🔨</button>`
+            :`<button class="btn btn-icon unban-icon" onclick="quickUnban('${esc(displayName)}')" title="Unban">✓</button>`}
+          <button class="btn btn-icon del-icon" onclick="quickDelete('${esc(displayName)}')" title="Delete">🗑</button>
+        </div>`:'<span style="font-size:11px;color:var(--outline);padding:0 6px;">—</span>'}
+      </div>`}).join('');
+  }
+
+  async function adminBan(){const u=$('ban-u').value.trim(),r=$('ban-r').value.trim();if(!u){toast('Enter a username.','⚠',true);return;}try{const d=await adminFetch('ban','POST',{username:u,reason:r||undefined});toast(d.message,'🔨');$('ban-u').value='';$('ban-r').value='';loadUsers();}catch(e){toast(e.message,'⚠',true);}}
+  async function quickRoleAssign(){const username=$('qrole-u').value.trim(),role=$('qrole-r').value;if(!username){toast('Enter a username.','⚠',true);return;}try{const d=await adminFetch('setrole','POST',{username,role});toast(d.message,'🎭');$('qrole-u').value='';loadUsers();}catch(e){toast(e.message,'⚠',true);}}
+  async function quickBan(u){const r=prompt(`Ban reason for ${u}:`);if(r===null)return;try{const d=await adminFetch('ban','POST',{username:u,reason:r||undefined});toast(d.message,'🔨');loadUsers();}catch(e){toast(e.message,'⚠',true);}}
+  async function quickUnban(u){try{const d=await adminFetch('unban','POST',{username:u});toast(d.message,'✓');loadUsers();}catch(e){toast(e.message,'⚠',true);}}
+  async function quickDelete(u){if(!confirm(`Delete "${u}" permanently?`))return;try{const d=await adminFetch('delete','DELETE',{username:u});toast(d.message,'🗑');loadUsers();}catch(e){toast(e.message,'⚠',true);}}
+</script>
 </body>
 </html>
